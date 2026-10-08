@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGS - Sistema de Gestión del Servicio</title>
+    
+    <style>
+        :root {
+            --primary: #0a2540;
+            --secondary: #0073e6;
+            --accent: #28a745;
+            --bg-light: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-dark: #2c3e50;
+            --text-muted: #6c757d;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .header-title h1 {
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-title p {
+            font-size: 11px;
+            opacity: 0.85;
+        }
+
+        .time-badge {
+            font-size: 13px;
+            background: rgba(255,255,255,0.12);
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .screen {
+            display: none;
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 28px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .screen-header {
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 14px;
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .screen-title {
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        input[type="text"], input[type="password"], textarea, select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #ffffff;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(0, 115, 230, 0.15);
+        }
+
+        .btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0, 115, 230, 0.2);
+        }
+
+        .btn:hover {
+            background-color: #005bb5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 115, 230, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background-color: var(--secondary);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 115, 230, 0.25);
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+        }
+
+        .btn-danger:hover {
+            background-color: #bd2130;
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .mejora-banner {
+            background-color: #f0f7ff;
+            border: 1px dashed var(--secondary);
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 22px;
+            text-align: center;
+        }
+
+        .mejora-banner p {
+            font-size: 13px;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .grid-2x2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 550px) {
+            .grid-2x2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .menu-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 22px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,115,230,0.12);
+            border-color: var(--secondary);
+        }
+
+        .menu-card-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+
+        .video-placeholder {
+            background: #0f172a;
+            color: white;
+            border-radius: 12px;
+            height: 240px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .video-play-btn {
+            width: 64px;
+            height: 64px;
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(4px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            border: 2px solid white;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .video-play-btn:hover {
+            transform: scale(1.08);
+            background: rgba(255,255,255,0.4);
+        }
+
+        nav.bottom-nav {
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            position: sticky;
+            bottom: 0;
+            z-index: 90;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+
+        nav.bottom-nav.hidden {
+            display: none !important;
+        }
+
+        .nav-item {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            text-decoration: none;
+            flex: 1;
+            padding: 4px 0;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-weight: 600;
+            display: none;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .success-box {
+            text-align: center;
+            padding: 20px 10px;
+        }
+
+        .success-icon {
+            width: 72px;
+            height: 72px;
+            background: #d1e7dd;
+            color: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            margin: 0 auto 16px auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast de Notificación -->
+    <div id="toastNotification" class="toast">¡Cambios guardados con éxito!</div>
+
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon">⚙</div>
+            <div class="header-title">
+                <h1>SGS</h1>
+                <p>Sistema de Gestión del Servicio</p>
+            </div>
+        </div>
+        <div class="time-badge">🕒 Consulta rápida &lt; 2 min</div>
+    </header>
+
+    <main>
+
+        <!-- PANTALLA: INICIO DE SESIÓN -->
+        <section id="screen-login" class="screen active">
+            <div class="screen-header">
+                <span class="screen-title">Inicio de sesión</span>
+            </div>
+            <div style="max-width: 380px; margin: 0 auto; text-align: center;">
+                <h2 style="margin-bottom: 6px; color: var(--primary);">Bienvenido al Kiosco</h2>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 22px;">
+                    Ingresa tu código de empleado o credencial para continuar
+                </p>
+
+                <!-- Credenciales Precargadas -->
+                <div class="form-group" style="text-align: left;">
+                    <label for="loginUser">Código de empleado o credencial:</label>
+                    <input type="text" id="loginUser" value="1024 (Carlos)" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label for="loginPass">Contraseña:</label>
+                    <input type="password" id="loginPass" value="123456" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
+                </div>
+
+                <button class="btn" onclick="executeLogin()">Ingresar</button>
+
+                <!-- Banner de Sugerencia de Mejora Continua -->
+                <div class="mejora-banner">
+                    <p><strong>💡 ¿Tienes una propuesta de mejora continua?</strong><br>Aporta sugerencias para mejorar procesos o la plataforma.</p>
+                    <a class="btnMejoraLink btn btn-outline" href="#" target="_blank" style="font-size: 13px; padding: 8px 14px;">
+                        Sugerir Cambios
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: PRINCIPAL -->
+        <section id="screen-main" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Pantalla principal</span>
+            </div>
+            <h2 id="welcomeHeading" style="color: var(--primary);">¡Hola, Carlos!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">¿Qué procedimiento o consulta necesitas revisar hoy?</p>
+
+            <div class="grid-2x2">
+                <div class="menu-card" onclick="navigateTo('screen-search-text')">
+                    <div class="menu-card-icon">🔍</div>
+                    <strong>Buscar por palabras clave</strong>
+                </div>
+                <div class="menu-card" onclick="navigateTo('screen-index')">
+                    <div class="menu-card-icon">📋</div>
+                    <strong>Índice de procesos</strong>
+                </div>
+                <div class="menu-card" onclick="navigateTo('screen-voice')">
+                    <div class="menu-card-icon">🎙</div>
+                    <strong>Buscar por voz</strong>
+                </div>
+                <div class="menu-card" onclick="navigateTo('screen-ai')">
+                    <div class="menu-card-icon">🤖</div>
+                    <strong>Asistente IA</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: BÚSQUEDA POR TEXTO -->
+        <section id="screen-search-text" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Búsqueda por palabras clave</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <div class="form-group">
+                <input type="text" value="mantenimiento preventivo" placeholder="Escribe tu búsqueda...">
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Resultados encontrados (5):</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="menu-card" style="text-align: left;" onclick="navigateTo('screen-procedure')">
+                    <strong>Mantenimiento preventivo</strong>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Proceso principal - Mantenimiento de unidades</p>
+                </div>
+                <div class="menu-card" style="text-align: left;" onclick="navigateTo('screen-procedure')">
+                    <strong>Checklist de mantenimiento preventivo</strong>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Formato | Documentos normativos</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: BÚSQUEDA POR ÍNDICE -->
+        <section id="screen-index" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Búsqueda por índice</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px; border-right: 1px solid var(--border-color); padding-right: 12px;">
+                    <p style="font-weight: 700; margin-bottom: 12px; color: var(--primary);">Categorías</p>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <button class="btn btn-outline" style="text-align: left; font-size: 13px; justify-content: flex-start;">Recepción de unidad</button>
+                        <button class="btn" style="text-align: left; font-size: 13px; justify-content: flex-start;">Mantenimiento</button>
+                        <button class="btn btn-outline" style="text-align: left; font-size: 13px; justify-content: flex-start;">Reparación</button>
+                    </div>
+                </div>
+                <div style="flex: 1.5; min-width: 240px;">
+                    <p style="font-weight: 700; margin-bottom: 12px; color: var(--primary);">Procesos de Mantenimiento</p>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div class="menu-card" style="text-align: left; padding: 12px 16px;" onclick="navigateTo('screen-procedure')">
+                            Mantenimiento preventivo ›
+                        </div>
+                        <div class="menu-card" style="text-align: left; padding: 12px 16px;" onclick="navigateTo('screen-procedure')">
+                            Mantenimiento correctivo ›
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: BÚSQUEDA POR VOZ -->
+        <section id="screen-voice" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Búsqueda por voz</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <div style="text-align: center; padding: 25px 0;">
+                <div style="width: 84px; height: 84px; background: #e8f4fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 42px; color: var(--secondary); margin: 0 auto 16px auto;">
+                    🎙
+                </div>
+                <h3>Habla ahora</h3>
+                <p style="color: var(--text-muted); margin-bottom: 22px;">Presiona el botón y di qué procedimiento deseas consultar.</p>
+                <button class="btn btn-outline" style="width: 220px; margin: 0 auto;" onclick="navigateTo('screen-procedure')">Simular: "Mantenimiento"</button>
+            </div>
+        </section>
+
+        <!-- PANTALLA: BÚSQUEDA POR IA -->
+        <section id="screen-ai" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Búsqueda por IA</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <div style="background: #f8fafc; padding: 16px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 16px;">
+                <p><strong>Asistente IA SGS:</strong> Haz tu pregunta y obtén una guía inmediata.</p>
+                <div style="background: var(--secondary); color: white; padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 14px;">
+                    ¿Cómo ejecuto el mantenimiento preventivo de una unidad?
+                </div>
+            </div>
+            <div class="menu-card" style="text-align: left; margin-bottom: 16px;" onclick="navigateTo('screen-procedure')">
+                <strong>Resultado sugerido: Mantenimiento preventivo</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Procedimiento verificado recomendado por la IA.</p>
+            </div>
+            <button class="btn btn-outline" onclick="navigateTo('screen-main')">Realizar otra consulta</button>
+        </section>
+
+        <!-- PANTALLA: VISUALIZACIÓN DEL PROCEDIMIENTO -->
+        <section id="screen-procedure" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Visualización del procedimiento</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <h2 style="color: var(--primary);">Mantenimiento preventivo</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px;">Tiempo estándar: 2 hrs | Versión: 03</p>
+
+            <div style="margin-bottom: 20px; background: #f8fafc; padding: 16px; border-radius: 8px;">
+                <h4 style="margin-bottom: 8px; color: var(--primary);">Pasos principales:</h4>
+                <ol style="margin-left: 20px; font-size: 14px; line-height: 1.6;">
+                    <li>Recibir la orden de trabajo asignada.</li>
+                    <li>Verificar la unidad en bahía.</li>
+                    <li>Realizar inspección física inicial.</li>
+                    <li>Ejecutar rutinas de mantenimiento.</li>
+                </ol>
+            </div>
+
+            <button class="btn" style="margin-bottom: 12px;" onclick="navigateTo('screen-video')">▶ Ver video introductorio</button>
+            <button class="btn btn-outline" onclick="navigateTo('screen-report')">⚠️ Reportar problema / Sugerir Mejora</button>
+        </section>
+
+        <!-- PANTALLA: CAPACITACIÓN / APOYO (VIDEO) -->
+        <section id="screen-video" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Capacitación / Apoyo</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-procedure')">Volver</button>
+            </div>
+            <h3 style="margin-bottom: 12px;">Video introductorio</h3>
+            
+            <!-- Marco representativo del video -->
+            <div class="video-placeholder">
+                <div class="video-play-btn">▶</div>
+                <p style="font-weight: 700; font-size: 16px;">[ Muestra de Video Introductorio ]</p>
+                <p style="font-size: 12px; opacity: 0.8; margin-top: 6px;">Aquí va el video explicativo del procedimiento (0:00 / 1:30)</p>
+            </div>
+
+            <div style="margin-bottom: 18px;">
+                <h4 style="margin-bottom: 6px;">¿Qué aprenderás?</h4>
+                <ul style="margin-left: 20px; font-size: 14px; line-height: 1.5; color: var(--text-dark);">
+                    <li>Objetivo del procedimiento estándar</li>
+                    <li>Puntos clave de seguridad durante la ejecución</li>
+                </ul>
+            </div>
+            <button class="btn" onclick="navigateTo('screen-completed')">Continuar al procedimiento</button>
+        </section>
+
+        <!-- PANTALLA: CONSULTA COMPLETADA -->
+        <section id="screen-completed" class="screen">
+            <div class="success-box">
+                <div class="success-icon">✓</div>
+                <h2 style="color: var(--primary);">¡Consulta completada!</h2>
+                <p style="color: var(--text-muted); margin-top: 6px; margin-bottom: 24px;">La información se ha registrado en tu historial de actividad.</p>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-outline" onclick="navigateTo('screen-main')">Volver al inicio</button>
+                    <button class="btn btn-danger" onclick="executeLogout()">Cerrar sesión</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: RECONOCIMIENTO POR USO -->
+        <section id="screen-recognition" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Reconocimiento por uso</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <div style="text-align: center;">
+                <h3 style="color: var(--primary);">Tu progreso de capacitación</h3>
+                <p style="color: var(--secondary); font-weight: 700; margin-top: 6px;">Técnico Certificado - Nivel 2</p>
+                <div style="background: #e2e8f0; height: 14px; border-radius: 7px; margin: 18px 0; overflow: hidden;">
+                    <div style="background: var(--secondary); width: 80%; height: 100%;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-around; margin-top: 24px; background: #f8fafc; padding: 16px; border-radius: 10px;">
+                    <div><strong style="font-size: 20px; color: var(--primary);">8</strong><br><span style="font-size: 12px; color: var(--text-muted);">Consultas</span></div>
+                    <div><strong style="font-size: 20px; color: var(--primary);">5</strong><br><span style="font-size: 12px; color: var(--text-muted);">Rutas</span></div>
+                    <div><strong style="font-size: 20px; color: var(--primary);">85</strong><br><span style="font-size: 12px; color: var(--text-muted);">Puntos</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: MIS PROCESOS FRECUENTES -->
+        <section id="screen-frequent" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Mis procesos frecuentes</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="menu-card" style="text-align: left;" onclick="navigateTo('screen-procedure')">
+                    📌 <strong>Mantenimiento preventivo</strong>
+                </div>
+                <div class="menu-card" style="text-align: left;" onclick="navigateTo('screen-procedure')">
+                    📌 <strong>Diagnóstico de fallas en sistema eléctrico</strong>
+                </div>
+                <div class="menu-card" style="text-align: left;" onclick="navigateTo('screen-procedure')">
+                    📌 <strong>Inspección rápida de niveles de fluídos</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: REPORTAR PROBLEMA / MEJORA -->
+        <section id="screen-report" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Reportar problema / Mejora</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-procedure')">Volver</button>
+            </div>
+            <h4 style="margin-bottom: 12px;">¿Qué tipo de observación deseas realizar?</h4>
+            <div style="margin: 16px 0; display: flex; flex-direction: column; gap: 10px;">
+                <label style="font-weight: normal; cursor: pointer;">
+                    <input type="radio" name="reportOption" checked style="margin-right: 8px;"> El procedimiento no coincide con la operación real
+                </label>
+                <label style="font-weight: normal; cursor: pointer;">
+                    <input type="radio" name="reportOption" style="margin-right: 8px;"> Falta información en la guía o instructivo
+                </label>
+                <label style="font-weight: normal; cursor: pointer;">
+                    <input type="radio" name="reportOption" style="margin-right: 8px;"> Tengo una propuesta para agilizar el proceso
+                </label>
+            </div>
+            <div class="form-group">
+                <textarea rows="3" placeholder="Describe tu sugerencia o problema observado (opcional)..."></textarea>
+            </div>
+            <button class="btn" onclick="navigateTo('screen-report-confirm')">🚀 Enviar reporte</button>
+        </section>
+
+        <!-- PANTALLA: CONFIRMACIÓN DE ENVÍO -->
+        <section id="screen-report-confirm" class="screen">
+            <div class="success-box">
+                <div class="success-icon">✓</div>
+                <h2 style="color: var(--primary);">¡Reporte enviado!</h2>
+                <p style="color: var(--text-muted); margin-top: 6px; margin-bottom: 24px;">Tu aporte nos ayuda a mantener actualizados y eficientes todos los procesos.</p>
+                <button class="btn" onclick="navigateTo('screen-main')">Volver al inicio</button>
+            </div>
+        </section>
+
+        <!-- PANTALLA: PERFIL DEL USUARIO -->
+        <section id="screen-profile" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Perfil del usuario</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+
+            <!-- Sección: Datos y Edición de Usuario -->
+            <div style="background: #f8fafc; padding: 18px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                <h4 style="margin-bottom: 14px; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                    👤 Cambiar nombre de usuario y contraseña
+                </h4>
+                <form id="profileForm" onsubmit="saveProfileChanges(event)">
+                    <div class="form-group">
+                        <label for="editUsername">Nombre de usuario:</label>
+                        <input type="text" id="editUsername" value="Carlos Mendoza" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPassword">Nueva contraseña:</label>
+                        <input type="password" id="editPassword" placeholder="Escribe tu nueva contraseña...">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirmar nueva contraseña:</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirma la contraseña...">
+                    </div>
+                    <button type="submit" class="btn" style="margin-top: 6px;">Guardar cambios</button>
+                </form>
+            </div>
+
+            <!-- Sección: Sugerencias de Mejora Continua -->
+            <div class="mejora-banner" style="margin-top: 0; margin-bottom: 20px; text-align: left;">
+                <h4 style="margin-bottom: 6px; color: var(--primary);">💡 Sugerencias de mejora continua</h4>
+                <p style="margin-bottom: 12px;">¿Detectaste una oportunidad de optimización en tus tareas o en el uso de este kiosco?</p>
+                <a class="btnMejoraLink btn btn-outline" href="#" target="_blank" style="font-size: 13px; padding: 10px 16px;">
+                    Ir a Sugerir Cambios
+                </a>
+            </div>
+
+            <!-- Sección: Cerrar Sesión -->
+            <button class="btn btn-danger" onclick="executeLogout()">🔴 Cerrar sesión</button>
+        </section>
+
+    </main>
+
+    <!-- BARRA DE NAVEGACIÓN INFERIOR (Oculta por defecto en login) -->
+    <nav id="bottomNav" class="bottom-nav hidden">
+        <a class="nav-item active" onclick="navigateTo('screen-main')">
+            <span class="nav-icon">🏠</span>Inicio
+        </a>
+        <a class="nav-item" onclick="navigateTo('screen-frequent')">
+            <span class="nav-icon">⭐</span>Frecuentes
+        </a>
+        <a class="nav-item" onclick="navigateTo('screen-recognition')">
+            <span class="nav-icon">🏆</span>Logros
+        </a>
+        <a class="nav-item" onclick="navigateTo('screen-profile')">
+            <span class="nav-icon">👤</span>Perfil
+        </a>
+    </nav>
+
+    <script>
+        // =========================================================================
+        // CONFIGURACIÓN DEL ENLACE DE MEJORA CONTINUA (MODIFICAR AQUÍ SI ES NECESARIO)
+        // =========================================================================
+        const LINK_MEJORA_CONTINUA = "https://t.ly/ugtJk";
+
+        // Nombre de usuario en memoria
+        let currentUserName = "Carlos Mendoza";
+
+        // Inicialización al cargar el DOM
+        document.addEventListener("DOMContentLoaded", function() {
+            // Asignar el enlace de mejora continua a todos los elementos con la clase btnMejoraLink
+            const mejoraLinks = document.querySelectorAll(".btnMejoraLink");
+            mejoraLinks.forEach(link => {
+                link.href = LINK_MEJORA_CONTINUA;
+            });
+
+            // Establecer estado inicial
+            document.getElementById("editUsername").value = currentUserName;
+        });
+
+        function navigateTo(screenId) {
+            // Ocultar todas las pantallas
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(s => s.classList.remove('active'));
+
+            // Mostrar la pantalla de destino
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // Gestionar visibilidad de la barra inferior de navegación
+            const bottomNav = document.getElementById("bottomNav");
+            if (screenId === 'screen-login') {
+                bottomNav.classList.add('hidden');
+            } else {
+                bottomNav.classList.remove('hidden');
+            }
+
+            // Actualizar estilo activo en la barra inferior
+            updateNavState(screenId);
+        }
+
+        function executeLogin() {
+            // Iniciar sesión y navegar a la pantalla principal
+            navigateTo('screen-main');
+        }
+
+        function executeLogout() {
+            // Regresar a pantalla de login y ocultar barra de navegación
+            navigateTo('screen-login');
+        }
+
+        // Actualiza el botón seleccionado en la barra inferior
+        function updateNavState(screenId) {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+
+            if (screenId === 'screen-main') navItems[0].classList.add('active');
+            else if (screenId === 'screen-frequent') navItems[1].classList.add('active');
+            else if (screenId === 'screen-recognition') navItems[2].classList.add('active');
+            else if (screenId === 'screen-profile') navItems[3].classList.add('active');
+        }
+
+        function saveProfileChanges(event) {
+            event.preventDefault();
+            const newName = document.getElementById("editUsername").value.trim();
+            const pass = document.getElementById("editPassword").value;
+            const confirmPass = document.getElementById("confirmPassword").value;
+
+            if (pass !== "" && pass !== confirmPass) {
+                showToast("⚠️ Las contraseñas no coinciden");
+                return;
+            }
+
+            if (newName !== "") {
+                currentUserName = newName;
+                document.getElementById("welcomeHeading").innerText = "¡Hola, " + currentUserName + "!";
+            }
+
+            // Limpiar inputs de contraseña
+            document.getElementById("editPassword").value = "";
+            document.getElementById("confirmPassword").value = "";
+
+            showToast("✓ Cambios guardados con éxito");
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toastNotification");
+            toast.innerText = message;
+            toast.style.display = "block";
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
