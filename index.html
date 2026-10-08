@@ -734,100 +734,85 @@
 
     <script>
         // =========================================================================
-        // CONFIGURACIÓN DEL ENLACE DE MEJORA CONTINUA (MODIFICAR AQUÍ SI ES NECESARIO)
+        // CONFIGURACIÓN DEL ENLACE DE MEJORA CONTINUA
         // =========================================================================
         const LINK_MEJORA_CONTINUA = "https://octaviopinorosas.github.io/Mejora_Continua/";
 
-        // Nombre de usuario en memoria
         let currentUserName = "Carlos Mendoza";
 
-        // Inicialización al cargar el DOM
+        // Asignación de enlace al cargar el documento
         document.addEventListener("DOMContentLoaded", function() {
-            // Asignar el enlace de mejora continua a todos los elementos con la clase btnMejoraLink
-            const mejoraLinks = document.querySelectorAll(".btnMejoraLink");
-            mejoraLinks.forEach(link => {
+            const links = document.querySelectorAll('.btnMejoraLink');
+            links.forEach(link => {
                 link.href = LINK_MEJORA_CONTINUA;
             });
-
-            // Establecer estado inicial
-            document.getElementById("editUsername").value = currentUserName;
         });
 
+        // Navegación entre pantallas
         function navigateTo(screenId) {
-            // Ocultar todas las pantallas
             const screens = document.querySelectorAll('.screen');
             screens.forEach(s => s.classList.remove('active'));
 
-            // Mostrar la pantalla de destino
             const targetScreen = document.getElementById(screenId);
             if (targetScreen) {
                 targetScreen.classList.add('active');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo(0, 0);
             }
 
-            // Gestionar visibilidad de la barra inferior de navegación
-            const bottomNav = document.getElementById("bottomNav");
-            if (screenId === 'screen-login') {
-                bottomNav.classList.add('hidden');
-            } else {
-                bottomNav.classList.remove('hidden');
-            }
-
-            // Actualizar estilo activo en la barra inferior
-            updateNavState(screenId);
+            // Actualizar estado visual de la barra de navegación inferior
+            updateNavHighlights(screenId);
         }
 
+        // Inicio de Sesión
         function executeLogin() {
-            // Iniciar sesión y navegar a la pantalla principal
+            document.getElementById('bottomNav').classList.remove('hidden');
             navigateTo('screen-main');
         }
 
+        // Cierre de Sesión
         function executeLogout() {
-            // Regresar a pantalla de login y ocultar barra de navegación
+            document.getElementById('bottomNav').classList.add('hidden');
             navigateTo('screen-login');
         }
 
-        // Actualiza el botón seleccionado en la barra inferior
-        function updateNavState(screenId) {
-            const navItems = document.querySelectorAll('.nav-item');
+        // Guardar Cambios de Perfil
+        function saveProfileChanges(e) {
+            e.preventDefault();
+            const newName = document.getElementById('editUsername').value.trim();
+            const pass = document.getElementById('editPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+
+            if (pass !== "" && pass !== confirmPass) {
+                alert("Las contraseñas ingresadas no coinciden.");
+                return;
+            }
+
+            if (newName !== "") {
+                currentUserName = newName;
+                document.getElementById('welcomeHeading').textContent = `¡Hola, ${currentUserName}!`;
+            }
+
+            // Limpiar inputs de contraseña
+            document.getElementById('editPassword').value = "";
+            document.getElementById('confirmPassword').value = "";
+
+            // Mostrar toast de confirmación
+            const toast = document.getElementById('toastNotification');
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Destacar icono activo en la barra inferior
+        function updateNavHighlights(screenId) {
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
             navItems.forEach(item => item.classList.remove('active'));
 
             if (screenId === 'screen-main') navItems[0].classList.add('active');
             else if (screenId === 'screen-frequent') navItems[1].classList.add('active');
             else if (screenId === 'screen-recognition') navItems[2].classList.add('active');
             else if (screenId === 'screen-profile') navItems[3].classList.add('active');
-        }
-
-        function saveProfileChanges(event) {
-            event.preventDefault();
-            const newName = document.getElementById("editUsername").value.trim();
-            const pass = document.getElementById("editPassword").value;
-            const confirmPass = document.getElementById("confirmPassword").value;
-
-            if (pass !== "" && pass !== confirmPass) {
-                showToast("⚠️ Las contraseñas no coinciden");
-                return;
-            }
-
-            if (newName !== "") {
-                currentUserName = newName;
-                document.getElementById("welcomeHeading").innerText = "¡Hola, " + currentUserName + "!";
-            }
-
-            // Limpiar inputs de contraseña
-            document.getElementById("editPassword").value = "";
-            document.getElementById("confirmPassword").value = "";
-
-            showToast("✓ Cambios guardados con éxito");
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById("toastNotification");
-            toast.innerText = message;
-            toast.style.display = "block";
-            setTimeout(() => {
-                toast.style.display = "none";
-            }, 3000);
         }
     </script>
 </body>
