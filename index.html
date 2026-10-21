@@ -1,118 +1,1091 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Gestión de Servicio</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      max-width: 750px;
-      margin: 40px auto;
-      padding: 0 20px;
-      background-color: #f4f6f9;
-      color: #333;
-    }
-    .card {
-      background: white;
-      padding: 25px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    textarea {
-      width: 100%;
-      height: 120px;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-      font-size: 14px;
-      resize: vertical;
-    }
-    button {
-      margin-top: 10px;
-      padding: 12px 24px;
-      background-color: #0066cc;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 15px;
-      cursor: pointer;
-    }
-    button:disabled {
-      background-color: #a0c4e8;
-      cursor: not-allowed;
-    }
-    #result {
-      margin-top: 20px;
-      padding: 15px;
-      background-color: #eef2f7;
-      border-left: 4px solid #0066cc;
-      border-radius: 4px;
-      white-space: pre-wrap;
-      line-height: 1.5;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGS - Sistema de Gestión del Servicio</title>
+    
+    <style>
+        :root {
+            --primary: #0a2540;
+            --secondary: #0073e6;
+            --accent: #28a745;
+            --bg-light: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-dark: #2c3e50;
+            --text-muted: #6c757d;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .header-title h1 {
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-title p {
+            font-size: 11px;
+            opacity: 0.85;
+        }
+
+        .time-badge {
+            font-size: 13px;
+            background: rgba(255,255,255,0.12);
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .screen {
+            display: none;
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 28px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .screen-header {
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 14px;
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .screen-title {
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        input[type="text"], input[type="password"], textarea, select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #ffffff;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(0, 115, 230, 0.15);
+        }
+
+        .btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0, 115, 230, 0.2);
+        }
+
+        .btn:hover {
+            background-color: #005bb5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 115, 230, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background-color: var(--secondary);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 115, 230, 0.25);
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+        }
+
+        .btn-danger:hover {
+            background-color: #bd2130;
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .mejora-banner {
+            background-color: #f0f7ff;
+            border: 1px dashed var(--secondary);
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 22px;
+            text-align: center;
+        }
+
+        .mejora-banner p {
+            font-size: 13px;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .grid-2x2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 550px) {
+            .grid-2x2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .menu-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 22px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,115,230,0.12);
+            border-color: var(--secondary);
+        }
+
+        .menu-card-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+
+        .video-container-box {
+            background: #0f172a;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+        }
+
+        .video-container-box iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .disclaimer-note {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav.bottom-nav {
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            position: sticky;
+            bottom: 0;
+            z-index: 90;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+
+        nav.bottom-nav.hidden {
+            display: none !important;
+        }
+
+        .nav-item {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            text-decoration: none;
+            flex: 1;
+            padding: 4px 0;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-weight: 600;
+            display: none;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .success-box {
+            text-align: center;
+            padding: 20px 10px;
+        }
+
+        .success-icon {
+            width: 72px;
+            height: 72px;
+            background: #d1e7dd;
+            color: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            margin: 0 auto 16px auto;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>Asistente de Servicio (Gemini AI)</h2>
-    <p>Escribe tu consulta sobre el servicio o diagnósticos:</p>
+    <!-- Toast de Notificación -->
+    <div id="toastNotification" class="toast">¡Cambios guardados con éxito!</div>
 
-    <textarea id="promptInput" placeholder="Ejemplo: Describe los pasos para diagnosticar una falla de comunicación CAN bus..."></textarea>
-    <br>
-    <button id="sendBtn" onclick="enviarConsulta()">Enviar Consulta</button>
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon">⚙</div>
+            <div class="header-title">
+                <h1>SGS</h1>
+                <p>Sistema de Gestión del Servicio</p>
+            </div>
+        </div>
+        <div class="time-badge">🕒 Consulta rápida &lt; 2 min</div>
+    </header>
 
-    <h3>Respuesta:</h3>
-    <div id="result">El resultado aparecerá aquí...</div>
-  </div>
+    <main>
 
-  <script>
-    // ------------------------------------------------------------------------
-    // CONFIGURACIÓN DE URL DEL BACKEND:
-    // Si estás probando en tu PC, usa 'http://localhost:3000/api/generate'
-    // Para producción, coloca la URL pública que te dé Render.
-    // ------------------------------------------------------------------------
-    const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:3000/api/generate'
-      : 'https://sistema-de-gestion-backend.onrender.com/api/generate'; // <-- Cambia esta URL por la tuya de Render
+        <!-- PANTALLA: INICIO DE SESIÓN -->
+        <section id="screen-login" class="screen active">
+            <div class="screen-header">
+                <span class="screen-title">Inicio de sesión</span>
+            </div>
+            <div style="max-width: 380px; margin: 0 auto; text-align: center;">
+                <h2 style="margin-bottom: 6px; color: var(--primary);">Bienvenido al Kiosco</h2>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 22px;">
+                    Ingresa tu código de empleado o credencial para continuar
+                </p>
 
-    async function enviarConsulta() {
-      const promptInput = document.getElementById('promptInput');
-      const sendBtn = document.getElementById('sendBtn');
-      const resultDiv = document.getElementById('result');
+                <div class="form-group" style="text-align: left;">
+                    <label for="loginUser">Código de empleado o credencial:</label>
+                    <input type="text" id="loginUser" value="1024 (Carlos)" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label for="loginPass">Contraseña:</label>
+                    <input type="password" id="loginPass" value="123456" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
+                </div>
 
-      const promptText = promptInput.value.trim();
-      if (!promptText) return;
+                <button class="btn" onclick="executeLogin()">Ingresar</button>
 
-      sendBtn.disabled = true;
-      resultDiv.innerText = 'Procesando consulta con Gemini...';
+                <div class="mejora-banner">
+                    <p><strong>💡 ¿Tienes una propuesta de mejora continua?</strong><br>Aporta sugerencias para mejorar procesos o la plataforma.</p>
+                    <a class="btnMejoraLink btn btn-outline" href="#" target="_blank" style="font-size: 13px; padding: 8px 14px;">
+                        Sugerir Cambios
+                    </a>
+                </div>
+            </div>
+        </section>
 
-      try {
-        const response = await fetch(BACKEND_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ prompt: promptText })
+        <!-- PANTALLA: PRINCIPAL -->
+        <section id="screen-main" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Pantalla principal</span>
+            </div>
+            <h2 id="welcomeHeading" style="color: var(--primary);">¡Hola, Carlos!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">¿Qué procedimiento o consulta necesitas revisar hoy?</p>
+
+            <div class="grid-2x2">
+                <div class="menu-card" onclick="navigateTo('screen-search-text')">
+                    <div class="menu-card-icon">🔍</div>
+                    <strong>Buscar por palabras clave</strong>
+                </div>
+                <div class="menu-card" onclick="navigateTo('screen-index')">
+                    <div class="menu-card-icon">📋</div>
+                    <strong>Índice de procesos</strong>
+                </div>
+                <div class="menu-card" onclick="navigateTo('screen-voice')">
+                    <div class="menu-card-icon">🎙</div>
+                    <strong>Buscar por voz</strong>
+                </div>
+                <div class="menu-card" onclick="navigateTo('screen-ai')">
+                    <div class="menu-card-icon">🤖</div>
+                    <strong>Asistente IA</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: BÚSQUEDA POR TEXTO -->
+        <section id="screen-search-text" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Búsqueda por palabras clave</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <div class="form-group">
+                <input type="text" id="searchInputText" placeholder="Escribe tu búsqueda (ej. mantenimiento, tractor, daños)...">
+            </div>
+            <p id="searchCountLabel" style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Resultados encontrados:</p>
+            <div id="searchResultsContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </section>
+
+        <!-- PANTALLA: BÚSQUEDA POR ÍNDICE -->
+        <section id="screen-index" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Búsqueda por índice</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                <div id="indexCategories" style="flex: 1; min-width: 200px; border-right: 1px solid var(--border-color); padding-right: 12px;">
+                    <p style="font-weight: 700; margin-bottom: 12px; color: var(--primary);">Categorías</p>
+                    <div style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+                <div id="indexProcedures" style="flex: 1.5; min-width: 240px;">
+                    <p id="indexCategoryTitle" style="font-weight: 700; margin-bottom: 12px; color: var(--primary);">Procesos</p>
+                    <div style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: BÚSQUEDA POR VOZ -->
+        <section id="screen-voice" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Búsqueda por voz</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <div style="text-align: center; padding: 25px 0;">
+                <div style="width: 84px; height: 84px; background: #e8f4fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 42px; color: var(--secondary); margin: 0 auto 16px auto;">
+                    🎙
+                </div>
+                <h3 id="voiceStatus">Habla ahora</h3>
+                <p id="voiceSub" style="color: var(--text-muted); margin-bottom: 22px;">Presiona el botón y di qué procedimiento deseas consultar.</p>
+                <button class="btn btn-outline" style="width: 240px; margin: 0 auto;" onclick="startVoiceRecognition()">🎙 Iniciar Reconocimiento</button>
+            </div>
+        </section>
+
+        <!-- PANTALLA: BÚSQUEDA POR IA -->
+        <section id="screen-ai" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Búsqueda por IA (Gemini API)</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <div style="background: #f8fafc; padding: 16px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 16px;">
+                <p><strong>Asistente IA SGS:</strong> Realiza cualquier pregunta sobre la operación y el agente responderá usando los manuales.</p>
+                <div class="form-group" style="margin-top: 10px;">
+                    <input type="text" id="aiQueryInput" placeholder="Ej: ¿Cuántas y qué fotos se deben tomar como evidencia al recibir un tractor?" style="margin-bottom: 8px;">
+                    <button class="btn" onclick="executeAIQuery()">🤖 Consultar al Agente IA</button>
+                </div>
+            </div>
+            <div id="aiResultCard" class="menu-card" style="text-align: left; margin-bottom: 16px; display: none;">
+                <strong id="aiResultTitle">Respuesta del Agente IA</strong>
+                <div id="aiResultDesc" style="font-size: 13px; color: var(--text-dark); margin-top: 6px; line-height: 1.5;">Analizando consulta...</div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: VISUALIZACIÓN DEL PROCEDIMIENTO -->
+        <section id="screen-procedure" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Visualización del procedimiento</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <h2 id="procTitle" style="color: var(--primary);">Mantenimiento preventivo</h2>
+            <p id="procMeta" style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px;">Tiempo estándar: 2 hrs | Versión: 03</p>
+
+            <div style="margin-bottom: 20px; background: #f8fafc; padding: 16px; border-radius: 8px;">
+                <h4 style="margin-bottom: 8px; color: var(--primary);">Pasos principales:</h4>
+                <ol id="procSteps" style="margin-left: 20px; font-size: 14px; line-height: 1.6;"></ol>
+            </div>
+
+            <button id="btnOpenDocument" class="btn btn-outline" style="margin-bottom: 12px; width: 100%;">📄 Abrir Documento Oficial Completo</button>
+            <button class="btn" style="margin-bottom: 12px;" onclick="navigateTo('screen-video')">▶ Ver video introductorio</button>
+            <button class="btn btn-outline" onclick="navigateTo('screen-report')">⚠️ Reportar problema / Sugerir Mejora</button>
+        </section>
+
+        <!-- PANTALLA: CAPACITACIÓN / APOYO (VIDEO) -->
+        <section id="screen-video" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Capacitación / Apoyo</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-procedure')">Volver</button>
+            </div>
+            
+            <div class="disclaimer-note">
+                <span>⚠️</span>
+                <span><strong>Nota:</strong> Los videos mostrados a continuación corresponden a material demostrativo / de prueba y pueden no tener relación exacta con el procedimiento seleccionado.</span>
+            </div>
+
+            <h3 id="videoPlayerTitle" style="margin-bottom: 12px;">Gimtrac - Cápsulas Informativas</h3>
+            
+            <div class="video-container-box">
+                <iframe id="youtubeIframe" src="https://www.youtube.com/embed/-g9rzH_9cXk" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+
+            <div style="margin-bottom: 18px;">
+                <h4 style="margin-bottom: 8px;">Videos de ejemplo disponibles:</h4>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button class="btn btn-outline" style="font-size: 13px; text-align: left; justify-content: flex-start;" onclick="loadVideo('-g9rzH_9cXk', 'Gimtrac - Cápsula Informativa - Servicio 1')">
+                        ▶ Video 1: Gimtrac - Cápsula Informativa - Servicio 1
+                    </button>
+                    <button class="btn btn-outline" style="font-size: 13px; text-align: left; justify-content: flex-start;" onclick="loadVideo('UNbjl_KpCcw', 'Gimtrac - Cápsula Informativa - Maquinaria 1')">
+                        ▶ Video 2: Gimtrac - Cápsula Informativa - Maquinaria 1
+                    </button>
+                </div>
+            </div>
+            <button class="btn" onclick="navigateTo('screen-completed')">Continuar al procedimiento</button>
+        </section>
+
+        <!-- PANTALLA: CONSULTA COMPLETADA -->
+        <section id="screen-completed" class="screen">
+            <div class="success-box">
+                <div class="success-icon">✓</div>
+                <h2 style="color: var(--primary);">¡Consulta completada!</h2>
+                <p style="color: var(--text-muted); margin-top: 6px; margin-bottom: 24px;">La información se ha registrado en tu historial de actividad.</p>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-outline" onclick="navigateTo('screen-main')">Volver al inicio</button>
+                    <button class="btn btn-danger" onclick="executeLogout()">Cerrar sesión</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: RECONOCIMIENTO POR USO -->
+        <section id="screen-recognition" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Reconocimiento por uso</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <div style="text-align: center;">
+                <h3 style="color: var(--primary);">Tu progreso de capacitación</h3>
+                <p style="color: var(--secondary); font-weight: 700; margin-top: 6px;">Técnico Certificado - Nivel 2</p>
+                <div style="background: #e2e8f0; height: 14px; border-radius: 7px; margin: 18px 0; overflow: hidden;">
+                    <div style="background: var(--secondary); width: 80%; height: 100%;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-around; margin-top: 24px; background: #f8fafc; padding: 16px; border-radius: 10px;">
+                    <div><strong style="font-size: 20px; color: var(--primary);">8</strong><br><span style="font-size: 12px; color: var(--text-muted);">Consultas</span></div>
+                    <div><strong style="font-size: 20px; color: var(--primary);">5</strong><br><span style="font-size: 12px; color: var(--text-muted);">Rutas</span></div>
+                    <div><strong style="font-size: 20px; color: var(--primary);">85</strong><br><span style="font-size: 12px; color: var(--text-muted);">Puntos</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: MIS PROCESOS FRECUENTES -->
+        <section id="screen-frequent" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Mis procesos frecuentes</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="menu-card" style="text-align: left;" onclick="openProcedure('G-SERV-ARM-01')">
+                    📌 <strong>Proceso de Armado y Entrega de Maquinaria Agrícola</strong>
+                </div>
+                <div class="menu-card" style="text-align: left;" onclick="openProcedure('G-SERV-OM-01')">
+                    📌 <strong>Gestión, Seguimiento y Escalamiento de Órdenes de Mantenimiento</strong>
+                </div>
+                <div class="menu-card" style="text-align: left;" onclick="openProcedure('G-SERV-025-A')">
+                    📌 <strong>Proceso de Contact Center</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA: REPORTAR PROBLEMA / MEJORA -->
+        <section id="screen-report" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Reportar problema / Mejora</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-procedure')">Volver</button>
+            </div>
+            <h4 style="margin-bottom: 12px;">¿Qué tipo de observación deseas realizar?</h4>
+            <div style="margin: 16px 0; display: flex; flex-direction: column; gap: 10px;">
+                <label style="font-weight: normal; cursor: pointer;">
+                    <input type="radio" name="reportOption" checked style="margin-right: 8px;"> El procedimiento no coincide con la operación real
+                </label>
+                <label style="font-weight: normal; cursor: pointer;">
+                    <input type="radio" name="reportOption" style="margin-right: 8px;"> Falta información en la guía o instructivo
+                </label>
+                <label style="font-weight: normal; cursor: pointer;">
+                    <input type="radio" name="reportOption" style="margin-right: 8px;"> Tengo una propuesta para agilizar el proceso
+                </label>
+            </div>
+            <div class="form-group">
+                <textarea rows="3" placeholder="Describe tu sugerencia o problema observado (opcional)..."></textarea>
+            </div>
+            <button class="btn" onclick="navigateTo('screen-report-confirm')">🚀 Enviar reporte</button>
+        </section>
+
+        <!-- PANTALLA: CONFIRMACIÓN DE ENVÍO -->
+        <section id="screen-report-confirm" class="screen">
+            <div class="success-box">
+                <div class="success-icon">✓</div>
+                <h2 style="color: var(--primary);">¡Reporte enviado!</h2>
+                <p style="color: var(--text-muted); margin-top: 6px; margin-bottom: 24px;">Tu aporte nos ayuda a mantener actualizados y eficientes todos los procesos.</p>
+                <button class="btn" onclick="navigateTo('screen-main')">Volver al inicio</button>
+            </div>
+        </section>
+
+        <!-- PANTALLA: PERFIL DEL USUARIO -->
+        <section id="screen-profile" class="screen">
+            <div class="screen-header">
+                <span class="screen-title">Perfil del usuario</span>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+            </div>
+
+            <div style="background: #f8fafc; padding: 18px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                <h4 style="margin-bottom: 14px; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                    👤 Cambiar nombre de usuario y contraseña
+                </h4>
+                <form id="profileForm" onsubmit="saveProfileChanges(event)">
+                    <div class="form-group">
+                        <label for="editUsername">Nombre de usuario:</label>
+                        <input type="text" id="editUsername" value="Carlos Mendoza" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPassword">Nueva contraseña:</label>
+                        <input type="password" id="editPassword" placeholder="Escribe tu nueva contraseña...">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirmar nueva contraseña:</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirma la contraseña...">
+                    </div>
+                    <button type="submit" class="btn" style="margin-top: 6px;">Guardar cambios</button>
+                </form>
+            </div>
+
+            <div class="mejora-banner" style="margin-top: 0; margin-bottom: 20px; text-align: left;">
+                <h4 style="margin-bottom: 6px; color: var(--primary);">💡 Sugerencias de mejora continua</h4>
+                <p style="margin-bottom: 12px;">¿Detectaste una oportunidad de optimización en tus tareas o en el uso de este kiosco?</p>
+                <a class="btnMejoraLink btn btn-outline" href="#" target="_blank" style="font-size: 13px; padding: 10px 16px;">
+                    Ir a Sugerir Cambios
+                </a>
+            </div>
+
+            <button class="btn btn-danger" onclick="executeLogout()">🔴 Cerrar sesión</button>
+        </section>
+
+    </main>
+
+    <!-- BARRA DE NAVEGACIÓN INFERIOR -->
+    <nav id="bottomNav" class="bottom-nav hidden">
+        <a class="nav-item active" onclick="navigateTo('screen-main')">
+            <span class="nav-icon">🏠</span>Inicio
+        </a>
+        <a class="nav-item" onclick="navigateTo('screen-frequent')">
+            <span class="nav-icon">⭐</span>Frecuentes
+        </a>
+        <a class="nav-item" onclick="navigateTo('screen-recognition')">
+            <span class="nav-icon">🏆</span>Logros
+        </a>
+        <a class="nav-item" onclick="navigateTo('screen-profile')">
+            <span class="nav-icon">👤</span>Perfil
+        </a>
+    </nav>
+
+    <script>
+        // =========================================================================
+        // CLAVE DE API DE GEMINI
+        // =========================================================================
+        const GEMINI_API_KEY = "AQ.Ab8RN6JuYQRCE1k1hz7kOp-EfqwIahlkTncTqyulamvkp7tOiA"; 
+
+        // =========================================================================
+        // BASE DE DATOS LOCAL extraída de los manuales de procesos
+        // =========================================================================
+        const MANUALES_DB = [
+            {
+                id: "G-SERV-025-A",
+                titulo: "Proceso de Contact Center",
+                categoria: "Atención a Clientes",
+                resumen: "Llamadas proactivas a clientes con más de 12 meses sin atención o de la lista Warranty.",
+                tiempoEstandar: "Respuesta < 24 hrs",
+                version: "A",
+                pdfUrl: "documentos/proceso-de-venta.pdf",
+                pasos: [
+                    "Recibir el primer día hábil del mes el listado de clientes y números de serie de equipos con más de 10 años entregados (vía Gerente de Servicio).",
+                    "Realizar filtro en el sistema CALIPSO por cercanía de taller de GIMTRAC y dirección de facturación.",
+                    "Identificar el último servicio preventivo, correctivo o de garantía en clientes con más de 10 meses sin atención.",
+                    "Realizar llamada telefónica o enviar mensaje vía WhatsApp/Expert Connect según el speech oficial.",
+                    "Ofrecer cotizaciones de servicios preventivos, promociones (reparación de embrague, paquetes de 1000/2000 hrs) o diagnósticos.",
+                    "En caso de aceptación del cliente, derivar el caso y seguimiento al jefe de taller del taller más cercano.",
+                    "El Jefe de Taller confirma la cita, coordina el pago, la OM, combustible, TAG y viáticos del técnico.",
+                    "Registrar la gestión en la agenda electrónica y realizar llamada de seguimiento al cliente a las 24 horas posteriores a la visita."
+                ],
+                keywords: ["contact center", "llamada", "calipso", "warranty", "cotizacion", "cliente", "expert connect", "promociones", "agenda electronica"]
+            },
+            {
+                id: "G-SERV-ARM-01",
+                titulo: "Proceso de Armado y Entrega de Maquinaria Agrícola",
+                categoria: "Servicio / Armado",
+                resumen: "Preparación, armado, lavado y entrega de tractores e implementos solicitados por ventas.",
+                tiempoEstandar: "3 días (Tractores)",
+                version: "A",
+                pdfUrl: "documentos/manual-de-armado.docx",
+                pasos: [
+                    "Ventas envía listado de equipos a preparar los lunes antes de las 10:00 AM junto con los formatos de preparación.",
+                    "Servicio entrega el formato de preparación al técnico/armador especificando modelo, serie, aditamentos, trocha y lastrado.",
+                    "El técnico arma y prepara el tractor/implemento conforme al manual del fabricante.",
+                    "Solicitud de combustible (tanque a 1/4) y niveles de aceite enviando evidencia fotográfica obligatoria.",
+                    "Lavado del tractor e implemento, aplicando almorol a las llantas de los tractores.",
+                    "Llenado del formato de control de calidad / checklist y prueba en dinamómetro según las instalaciones del taller.",
+                    "Carga en transporte, aseguramiento de carga y toma de evidencia fotográfica previa a salir de la sucursal.",
+                    "Entrega en el domicilio del cliente en presencia del vendedor y firma de la lista de verificación sin daños mecánicos ni estéticos."
+                ],
+                keywords: ["armado", "entrega", "preparacion", "tractor", "implemento", "combustible", "aceite", "checklist", "dinamometro", "transporte", "almorol"]
+            },
+            {
+                id: "G-SERV-OM-01",
+                titulo: "Gestión, Seguimiento y Escalamiento de Órdenes de Mantenimiento",
+                categoria: "Mantenimiento / Taller",
+                resumen: "Proceso para la atención oportuna y escalamiento de reparaciones hasta su resolución.",
+                tiempoEstandar: "30 días naturales",
+                version: "A",
+                pdfUrl: "documentos/proceso-gestion-ordenes-mantenimiento.pdf",
+                pasos: [
+                    "Recepción del cliente y reporte de falla por parte del Jefe de Taller (JT).",
+                    "Apertura de la Orden de Mantenimiento (OM) por el Controlista en sistema (plazo objetivo de 30 días para solución).",
+                    "Registro continuo de actividades, diagnósticos y refacciones en la Bitácora de Mantenimiento.",
+                    "Escalamiento a Gerencia de Servicio y Soporte Técnico vía correo si la OM no se soluciona dentro de los primeros 30 días.",
+                    "Monitoreo semanal del caso en conjunto con Soporte Técnico para OM mayores a 31 días.",
+                    "Cierre formal de la OM previa verificación de operación adecuada y conformidad del cliente."
+                ],
+                keywords: ["orden de mantenimiento", "om", "bitacora", "escalamiento", "soporte tecnico", "taller", "reparacion", "diagnostico", "30 dias"]
+            },
+            {
+                id: "G-SERV-DAN-01",
+                titulo: "Recepción de Tractores o Implementos con Daños o Faltantes entre Sucursales",
+                categoria: "Logística / Recepción",
+                resumen: "Inspección, documentación fotográfica y deslinde de responsabilidades por daños durante el traslado.",
+                tiempoEstandar: "Notificación < 24 hrs",
+                version: "A",
+                pdfUrl: "documentos/recepcion-danos-faltantes-sucursales.pdf",
+                pasos: [
+                    "Verificación documental de modelo y serie al recibir el tractor o implemento.",
+                    "Inspección visual inicial completa (carrocería, llantas, cabina, luces, accesorios y manuales) antes de descargar o mover la unidad.",
+                    "Captura de evidencia fotográfica completa (mínimo 8 ángulos: frontal, trasera, laterales, horómetro, serie, daños y faltantes).",
+                    "Elaboración del Reporte de Recepción con Daños o Faltantes si se detecta cualquier anomalía.",
+                    "Notificación dentro de las primeras 24 horas por correo electrónico a Gerencias (Servicio, Maquinaria, Ventas, Logística y Origen).",
+                    "Validación de responsabilidades con la sucursal de origen (evaluando si el daño ocurrió antes del embarque, en traslado o en descarga).",
+                    "Elaboración de cotización de reparación y gestión de pago/factura a través del área correspondiente o transporte."
+                ],
+                keywords: ["daños", "faltantes", "sucursales", "traslado", "inspeccion", "evidencia fotografica", "reporte de recepcion", "logistica", "fletera", "fotos"]
+            }
+        ];
+
+        // CONFIGURACIÓN DE ENLACES
+        const LINK_MEJORA_CONTINUA = "https://octaviopinorosas.github.io/Mejora_Continua/";
+        let currentUserName = "Carlos Mendoza";
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const links = document.querySelectorAll('.btnMejoraLink');
+            links.forEach(l => l.href = LINK_MEJORA_CONTINUA);
+
+            initSearchEngine();
         });
 
-        const data = await response.json();
+        // =========================================================================
+        // NAVEGACIÓN Y CONTROL DE PANTALLAS
+        // =========================================================================
+        function navigateTo(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) targetScreen.classList.add('active');
 
-        if (response.ok) {
-          resultDiv.innerText = data.response;
-        } else {
-          resultDiv.innerText = `Error: ${data.error}`;
+            const bottomNav = document.getElementById('bottomNav');
+            if (screenId === 'screen-login') {
+                bottomNav.classList.add('hidden');
+            } else {
+                bottomNav.classList.remove('hidden');
+            }
+
+            window.scrollTo(0, 0);
         }
-      } catch (error) {
-        console.error(error);
-        resultDiv.innerText = 'Error de conexión. Asegúrate de que el servidor backend esté activo.';
-      } finally {
-        sendBtn.disabled = false;
-      }
-    }
-  </script>
 
+        function executeLogin() {
+            navigateTo('screen-main');
+        }
+
+        function executeLogout() {
+            navigateTo('screen-login');
+        }
+
+        // =========================================================================
+        // REPRODUCTOR DE VIDEO
+        // =========================================================================
+        function loadVideo(videoId, title) {
+            const iframe = document.getElementById('youtubeIframe');
+            const titleEl = document.getElementById('videoPlayerTitle');
+            if (iframe) iframe.src = `https://www.youtube.com/embed/${videoId}`;
+            if (titleEl) titleEl.textContent = title;
+        }
+
+        // =========================================================================
+        // LÓGICA DE LAS 4 MODALIDADES DE BÚSQUEDA
+        // =========================================================================
+        function initSearchEngine() {
+            const textInput = document.getElementById('searchInputText');
+            if (textInput) {
+                textInput.addEventListener('input', function(e) {
+                    runTextSearch(e.target.value);
+                });
+                runTextSearch('');
+            }
+            renderIndexCategories();
+        }
+
+        // --- MODALIDAD 1: TEXTO LIBRE ---
+        function runTextSearch(query) {
+            const container = document.getElementById('searchResultsContainer');
+            const countLabel = document.getElementById('searchCountLabel');
+            if (!container) return;
+
+            const cleanQuery = query.toLowerCase().trim();
+            const matches = MANUALES_DB.filter(doc => {
+                return doc.titulo.toLowerCase().includes(cleanQuery) ||
+                       doc.resumen.toLowerCase().includes(cleanQuery) ||
+                       doc.keywords.some(k => k.includes(cleanQuery));
+            });
+
+            if (countLabel) countLabel.textContent = `Resultados encontrados (${matches.length}):`;
+            container.innerHTML = '';
+
+            if (matches.length === 0) {
+                container.innerHTML = `<p style="font-size:13px; color:var(--text-muted); text-align:center; padding:15px;">No se encontraron procesos para "${query}".</p>`;
+                return;
+            }
+
+            matches.forEach(doc => {
+                const card = document.createElement('div');
+                card.className = 'menu-card';
+                card.style.textAlign = 'left';
+                card.onclick = () => openProcedure(doc.id);
+                card.innerHTML = `
+                    <strong>${doc.titulo}</strong>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${doc.categoria} | Código: ${doc.id}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // --- MODALIDAD 2: ÍNDICE POR CATEGORÍAS ---
+        function renderIndexCategories() {
+            const categoriesContainer = document.querySelector('#indexCategories div');
+            if (!categoriesContainer) return;
+
+            const categories = [...new Set(MANUALES_DB.map(m => m.categoria))];
+            categoriesContainer.innerHTML = '';
+
+            categories.forEach((cat, index) => {
+                const btn = document.createElement('button');
+                btn.className = index === 0 ? 'btn' : 'btn btn-outline';
+                btn.style.textAlign = 'left';
+                btn.style.fontSize = '13px';
+                btn.style.justifyContent = 'flex-start';
+                btn.textContent = cat;
+                btn.onclick = () => {
+                    categoriesContainer.querySelectorAll('button').forEach(b => b.className = 'btn btn-outline');
+                    btn.className = 'btn';
+                    filterIndexByCategory(cat);
+                };
+                categoriesContainer.appendChild(btn);
+            });
+
+            if (categories.length > 0) filterIndexByCategory(categories[0]);
+        }
+
+        function filterIndexByCategory(category) {
+            const listContainer = document.querySelector('#indexProcedures div');
+            const titleLabel = document.getElementById('indexCategoryTitle');
+            if (!listContainer) return;
+
+            if (titleLabel) titleLabel.textContent = `Procesos de ${category}`;
+            listContainer.innerHTML = '';
+
+            const filtered = MANUALES_DB.filter(m => m.categoria === category);
+            filtered.forEach(doc => {
+                const card = document.createElement('div');
+                card.className = 'menu-card';
+                card.style.textAlign = 'left';
+                card.style.padding = '12px 16px';
+                card.onclick = () => openProcedure(doc.id);
+                card.textContent = `${doc.titulo} ›`;
+                listContainer.appendChild(card);
+            });
+        }
+
+        // --- MODALIDAD 3: BÚSQUEDA POR VOZ ---
+        function startVoiceRecognition() {
+            const statusEl = document.getElementById('voiceStatus');
+            const subEl = document.getElementById('voiceSub');
+
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'es-MX';
+
+                if (statusEl) statusEl.textContent = "Escuchando...";
+                recognition.start();
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript.toLowerCase();
+                    if (subEl) subEl.textContent = `Escuchado: "${transcript}"`;
+
+                    const match = MANUALES_DB.find(m => 
+                        m.titulo.toLowerCase().includes(transcript) ||
+                        m.keywords.some(k => transcript.includes(k))
+                    );
+
+                    if (match) {
+                        if (statusEl) statusEl.textContent = "¡Proceso encontrado!";
+                        setTimeout(() => openProcedure(match.id), 1200);
+                    } else {
+                        if (statusEl) statusEl.textContent = "No se halló coincidencia exacta";
+                    }
+                };
+
+                recognition.onerror = function() {
+                    if (statusEl) statusEl.textContent = "Error al escuchar. Intenta nuevamente.";
+                };
+            } else {
+                if (subEl) subEl.textContent = "Simulando voz: 'Mantenimiento'";
+                setTimeout(() => openProcedure("G-SERV-OM-01"), 1000);
+            }
+        }
+
+        // --- MODALIDAD 4: ASISTENTE IA (CONEXIÓN GEMINI API) ---
+        async function executeAIQuery() {
+            const input = document.getElementById('aiQueryInput');
+            const card = document.getElementById('aiResultCard');
+            const title = document.getElementById('aiResultTitle');
+            const desc = document.getElementById('aiResultDesc');
+
+            if (!input || !input.value.trim()) return;
+
+            const query = input.value.trim();
+
+            card.style.display = 'block';
+            card.onclick = null;
+            title.textContent = "🤖 Agente IA Analizando...";
+            desc.textContent = "Consultando en la base de datos de los manuales de procesos...";
+
+            const systemPrompt = `Eres un Agente Experto en Gestión de Servicios de Maquinaria Agrícola de Gimtrac.
+Tu tarea es responder a la duda del usuario basándote EXCLUSIVAMENTE en la siguiente base de datos de manuales de procesos:
+
+${JSON.stringify(MANUALES_DB, null, 2)}
+
+Reglas de respuesta:
+1. Responde de forma clara, detallada e indicando el procedimiento exacto paso a paso (por ejemplo, si te preguntan por fotos, enumera las vistas requeridas: vista frontal, trasera, costados, horómetro, número de serie, daños y faltantes).
+2. Menciona claramente cuál es el código y título del manual del que obtuviste la información.
+3. Si la duda no se encuentra en ningún manual, indica amablemente que no está en los registros.
+
+Pregunta del usuario: "${query}"`;
+
+            try {
+                // Endpoint actualizado a gemini-3.8-flash
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: systemPrompt }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error ? data.error.message : `Error HTTP ${response.status}`);
+                }
+                
+                if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+                    const aiReply = data.candidates[0].content.parts[0].text;
+                    
+                    title.textContent = "Respuesta del Agente IA:";
+                    desc.innerHTML = aiReply.replace(/\n/g, '<br>');
+
+                    const matchedDoc = MANUALES_DB.find(m => aiReply.toLowerCase().includes(m.titulo.toLowerCase()) || aiReply.includes(m.id));
+                    if (matchedDoc) {
+                        card.onclick = () => openProcedure(matchedDoc.id);
+                    }
+                } else {
+                    throw new Error("La API no devolvió una respuesta válida.");
+                }
+            } catch (error) {
+                console.error("Error consultando la API de Gemini:", error);
+                title.textContent = "⚠️ Error de conexión con la IA";
+                desc.textContent = `No se pudo obtener la respuesta de Gemini (${error.message}). Revisa tu clave de API o conexión a internet.`;
+            }
+        }
+
+        // =========================================================================
+        // VISUALIZACIÓN DINÁMICA DE UN PROCEDIMIENTO
+        // =========================================================================
+        function openProcedure(docId) {
+            const doc = MANUALES_DB.find(m => m.id === docId);
+            if (!doc) return;
+
+            document.getElementById('procTitle').textContent = doc.titulo;
+            document.getElementById('procMeta').textContent = `Tiempo estándar: ${doc.tiempoEstandar} | Versión: ${doc.version} | Código: ${doc.id}`;
+
+            const ol = document.getElementById('procSteps');
+            ol.innerHTML = '';
+            doc.pasos.forEach(paso => {
+                const li = document.createElement('li');
+                li.textContent = paso;
+                ol.appendChild(li);
+            });
+
+            const btnOpen = document.getElementById('btnOpenDocument');
+            if (btnOpen) {
+                if (doc.pdfUrl) {
+                    btnOpen.style.display = 'inline-flex';
+                    btnOpen.onclick = () => window.open(doc.pdfUrl, '_blank');
+                } else {
+                    btnOpen.style.display = 'none';
+                }
+            }
+
+            navigateTo('screen-procedure');
+        }
+
+        // PERFIL
+        function saveProfileChanges(e) {
+            e.preventDefault();
+            const newName = document.getElementById('editUsername').value;
+            if (newName) {
+                currentUserName = newName;
+                document.getElementById('welcomeHeading').textContent = `¡Hola, ${newName}!`;
+
+                const toast = document.getElementById('toastNotification');
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            }
+        }
+    </script>
 </body>
 </html>
