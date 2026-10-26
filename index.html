@@ -7,14 +7,15 @@
     
     <style>
         :root {
-            --primary: #0a2540;
-            --secondary: #0073e6;
-            --accent: #28a745;
-            --bg-light: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-dark: #2c3e50;
-            --text-muted: #6c757d;
-            --border-color: #e2e8f0;
+            /* Paleta unificada con tonos verdes corporativos (Estilo John Deere / Mejora Continua) */
+            --primary: #14532d;      /* Verde bosque profundo / industrial */
+            --secondary: #16a34a;    /* Verde vivo de acento */
+            --accent: #22c55e;       /* Verde claro para éxito */
+            --bg-light: #f4fdf4;     /* Fondo general con tinte verde claro */
+            --card-bg: #ffffff;      /* Blanco para tarjetas */
+            --text-dark: #1e293b;    /* Texto principal oscuro de alta legibilidad */
+            --text-muted: #64748b;   /* Texto secundario */
+            --border-color: #cbd5e1; /* Bordes sutiles */
         }
 
         * {
@@ -53,37 +54,66 @@
         }
 
         .logo-icon {
-            width: 38px;
-            height: 38px;
-            background: var(--secondary);
-            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            background: #ffffff;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 20px;
+            font-size: 22px;
+            color: var(--primary);
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 2px solid var(--secondary);
         }
 
         .header-title h1 {
-            font-size: 19px;
+            font-size: 18px;
             font-weight: 700;
             letter-spacing: 0.5px;
         }
 
         .header-title p {
             font-size: 11px;
-            opacity: 0.85;
+            opacity: 0.9;
+            color: #bbf7d0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .time-badge {
             font-size: 13px;
-            background: rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.15);
             padding: 6px 14px;
             border-radius: 20px;
             display: flex;
             align-items: center;
             gap: 6px;
+        }
+
+        .btn-logout-header {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-logout-header:hover {
+            background-color: #bd2130;
+            transform: translateY(-1px);
         }
 
         main {
@@ -156,7 +186,7 @@
 
         input:focus, textarea:focus {
             border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(0, 115, 230, 0.15);
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
         }
 
         .btn {
@@ -176,13 +206,13 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: 0 2px 4px rgba(0, 115, 230, 0.2);
+            box-shadow: 0 2px 4px rgba(22, 163, 74, 0.2);
         }
 
         .btn:hover {
-            background-color: #005bb5;
+            background-color: #15803d;
             transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 115, 230, 0.3);
+            box-shadow: 0 4px 8px rgba(22, 163, 74, 0.3);
         }
 
         .btn:active {
@@ -199,7 +229,7 @@
         .btn-outline:hover {
             background-color: var(--secondary);
             color: white;
-            box-shadow: 0 4px 8px rgba(0, 115, 230, 0.25);
+            box-shadow: 0 4px 8px rgba(22, 163, 74, 0.25);
         }
 
         .btn-danger {
@@ -213,7 +243,7 @@
         }
 
         .mejora-banner {
-            background-color: #f0f7ff;
+            background-color: #f0fdf4;
             border: 1px dashed var(--secondary);
             padding: 16px;
             border-radius: 10px;
@@ -239,6 +269,9 @@
             .grid-2x2 {
                 grid-template-columns: 1fr;
             }
+            .time-badge {
+                display: none;
+            }
         }
 
         .menu-card {
@@ -254,7 +287,7 @@
 
         .menu-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0,115,230,0.12);
+            box-shadow: 0 8px 16px rgba(22,163,74,0.12);
             border-color: var(--secondary);
         }
 
@@ -368,6 +401,56 @@
             font-size: 38px;
             margin: 0 auto 16px auto;
         }
+
+        /* Modal visor in-app */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 950px;
+            width: 100%;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: fadeIn 0.25s ease-out;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 14px 20px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            flex: 1;
+            background: #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -375,15 +458,33 @@
     <!-- Toast de Notificación -->
     <div id="toastNotification" class="toast">¡Cambios guardados con éxito!</div>
 
-    <header>
-        <div class="logo-container">
-            <div class="logo-icon">⚙</div>
-            <div class="header-title">
-                <h1>SGS</h1>
-                <p>Sistema de Gestión del Servicio</p>
+    <!-- MODAL VISOR DE DOCUMENTO IN-APP -->
+    <div id="docModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalDocTitle" style="font-size: 16px;">Documento Oficial</h3>
+                <button class="btn btn-danger" style="width: auto; padding: 4px 12px; font-size: 12px;" onclick="closeDocModal()">✕ Cerrar</button>
+            </div>
+            <div class="modal-body">
+                <iframe id="docIframe" src=""></iframe>
             </div>
         </div>
-        <div class="time-badge">🕒 Consulta rápida &lt; 2 min</div>
+    </div>
+
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon">G</div>
+            <div class="header-title">
+                <h1>GIMTRAC</h1>
+                <p>Sistema de Gestión del Servicio (SGS)</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="time-badge">🕒 Consulta rápida &lt; 2 min</div>
+            <button id="btnHeaderLogout" class="btn-logout-header" onclick="executeLogout()">
+                🚪 Cerrar sesión
+            </button>
+        </div>
     </header>
 
     <main>
@@ -411,8 +512,8 @@
                 <button class="btn" onclick="executeLogin()">Ingresar</button>
 
                 <div class="mejora-banner">
-                    <p><strong>💡 ¿Tienes una propuesta de mejora continua?</strong><br>Aporta sugerencias para mejorar procesos o la plataforma.</p>
-                    <a class="btnMejoraLink btn btn-outline" href="#" target="_blank" style="font-size: 13px; padding: 8px 14px;">
+                    <p><strong>💡 Encuesta de mejora continua</strong><br>Aporta sugerencias para mejorar los procesos u otro tema en general.</p>
+                    <a class="btnMejoraLink btn btn-outline" href="https://octaviopinorosas.github.io/Mejora_Continua/" target="_blank" style="font-size: 13px; padding: 8px 14px;">
                         Sugerir Cambios
                     </a>
                 </div>
@@ -432,7 +533,7 @@
                     <div class="menu-card-icon">🔍</div>
                     <strong>Buscar por palabras clave</strong>
                 </div>
-                <div class="menu-card" onclick="navigateTo('screen-index')">
+                <div class="menu-card" onclick="initIndex(); navigateTo('screen-index')">
                     <div class="menu-card-icon">📋</div>
                     <strong>Índice de procesos</strong>
                 </div>
@@ -454,7 +555,7 @@
                 <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
             </div>
             <div class="form-group">
-                <input type="text" id="searchInputText" placeholder="Escribe tu búsqueda (ej. mantenimiento, tractor, daños)...">
+                <input type="text" id="searchInputText" placeholder="Escribe tu búsqueda (ej. mantenimiento, tractor, daños)..." oninput="handleTextSearch(this.value)">
             </div>
             <p id="searchCountLabel" style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Resultados encontrados:</p>
             <div id="searchResultsContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
@@ -469,11 +570,11 @@
             <div style="display: flex; gap: 16px; flex-wrap: wrap;">
                 <div id="indexCategories" style="flex: 1; min-width: 200px; border-right: 1px solid var(--border-color); padding-right: 12px;">
                     <p style="font-weight: 700; margin-bottom: 12px; color: var(--primary);">Categorías</p>
-                    <div style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    <div id="categoriesList" style="display: flex; flex-direction: column; gap: 8px;"></div>
                 </div>
                 <div id="indexProcedures" style="flex: 1.5; min-width: 240px;">
                     <p id="indexCategoryTitle" style="font-weight: 700; margin-bottom: 12px; color: var(--primary);">Procesos</p>
-                    <div style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    <div id="proceduresList" style="display: flex; flex-direction: column; gap: 8px;"></div>
                 </div>
             </div>
         </section>
@@ -527,7 +628,7 @@
                 <ol id="procSteps" style="margin-left: 20px; font-size: 14px; line-height: 1.6;"></ol>
             </div>
 
-            <button id="btnOpenDocument" class="btn btn-outline" style="margin-bottom: 12px; width: 100%;">📄 Abrir Documento Oficial Completo</button>
+            <button id="btnOpenDocument" class="btn btn-outline" style="margin-bottom: 12px; width: 100%;">📄 Ver Documento Oficial en Pantalla</button>
             <button class="btn" style="margin-bottom: 12px;" onclick="navigateTo('screen-video')">▶ Ver video introductorio</button>
             <button class="btn btn-outline" onclick="navigateTo('screen-report')">⚠️ Reportar problema / Sugerir Mejora</button>
         </section>
@@ -613,6 +714,9 @@
                 <div class="menu-card" style="text-align: left;" onclick="openProcedure('G-SERV-025-A')">
                     📌 <strong>Proceso de Contact Center</strong>
                 </div>
+                <div class="menu-card" style="text-align: left;" onclick="openProcedure('G-SERV-REC-01')">
+                    📌 <strong>Recepción de Tractores con Daños o Faltantes entre Sucursales</strong>
+                </div>
             </div>
         </section>
 
@@ -679,10 +783,10 @@
             </div>
 
             <div class="mejora-banner" style="margin-top: 0; margin-bottom: 20px; text-align: left;">
-                <h4 style="margin-bottom: 6px; color: var(--primary);">💡 Sugerencias de mejora continua</h4>
-                <p style="margin-bottom: 12px;">¿Detectaste una oportunidad de optimización en tus tareas o en el uso de este kiosco?</p>
-                <a class="btnMejoraLink btn btn-outline" href="#" target="_blank" style="font-size: 13px; padding: 10px 16px;">
-                    Ir a Sugerir Cambios
+                <h4 style="margin-bottom: 6px; color: var(--primary);">💡 Encuesta de mejora continua</h4>
+                <p style="margin-bottom: 12px;">Aporta sugerencias para mejorar los procesos u otro tema en general.</p>
+                <a class="btnMejoraLink btn btn-outline" href="https://octaviopinorosas.github.io/Mejora_Continua/" target="_blank" style="font-size: 13px; padding: 10px 16px;">
+                    Sugerir Cambios
                 </a>
             </div>
 
@@ -709,115 +813,108 @@
 
     <script>
         // =========================================================================
-        // BASE DE DATOS LOCAL extraída de los manuales de procesos
+        // BASE DE DATOS LOCAL CON LOS ENLACES RAW DE GITHUB
         // =========================================================================
         const MANUALES_DB = [
             {
                 id: "G-SERV-025-A",
                 titulo: "Proceso de Contact Center",
                 categoria: "Atención a Clientes",
-                resumen: "Llamadas proactivas a clientes con más de 12 meses sin atención o de la lista Warranty.",
+                resumen: "Llamadas proactivas a clientes con más de 12 meses sin atención o de la lista Warranty[cite: 2].",
                 tiempoEstandar: "Respuesta < 24 hrs",
                 version: "A",
-                pdfUrl: "documentos/proceso-de-venta.pdf",
+                fileUrl: "https://raw.githubusercontent.com/OctavioPinoRosas/SistemaDeGestionDelServicio/main/documentos/proceso-de-venta.pdf",
                 pasos: [
-                    "Recibir el primer día hábil del mes el listado de clientes y números de serie de equipos con más de 10 años entregados (vía Gerente de Servicio).",
-                    "Realizar filtro en el sistema CALIPSO por cercanía de taller de GIMTRAC y dirección de facturación.",
-                    "Identificar el último servicio preventivo, correctivo o de garantía en clientes con más de 10 meses sin atención.",
-                    "Realizar llamada telefónica o enviar mensaje vía WhatsApp/Expert Connect según el speech oficial.",
-                    "Ofrecer cotizaciones de servicios preventivos, promociones (reparación de embrague, paquetes de 1000/2000 hrs) o diagnósticos.",
-                    "En caso de aceptación del cliente, derivar el caso y seguimiento al jefe de taller del taller más cercano.",
-                    "El Jefe de Taller confirma la cita, coordina el pago, la OM, combustible, TAG y viáticos del técnico.",
-                    "Registrar la gestión en la agenda electrónica y realizar llamada de seguimiento al cliente a las 24 horas posteriores a la visita."
-                ],
-                keywords: ["contact center", "llamada", "calipso", "warranty", "cotizacion", "cliente", "expert connect", "promociones", "agenda electronica"]
+                    "Inicia con la necesidad del cliente o llamada proactiva del Contact Center (vía telefónica, WhatsApp o Expert Connect)[cite: 9].",
+                    "Recibir en los primeros 5 días hábiles de cada mes el listado de clientes y series de equipos sin atención de servicio (Warranty con antigüedad de hasta 10 años)[cite: 9].",
+                    "Realizar segundo filtro en el sistema CALIPSO por dirección de facturación y cercanía del taller GIMTRAC[cite: 9].",
+                    "Identificar el último servicio preventivo, correctivo o de garantía en clientes con más de 10 meses sin atención[cite: 9].",
+                    "Realizar llamada telefónica aplicando el speech oficial de contacto[cite: 9].",
+                    "Proporcionar cotizaciones de servicios preventivos, diagnósticos o levantamientos requeridos[cite: 9].",
+                    "Promocionar ofertas vigentes de fábrica (reparación de embrague, paquetes de 1000/2000 hrs, financiamiento)[cite: 9, 10].",
+                    "Derivar la atención y seguimiento al jefe de taller más cercano si el cliente acepta la cotización[cite: 10].",
+                    "Enviar información del cliente al jefe de taller (ubicación, teléfono, referencias físicas y forma de pago)[cite: 10].",
+                    "El jefe de taller avisa al cliente, gestiona la OM, solicitud de combustible, TAG, viáticos y aplicación del pago[cite: 10].",
+                    "Confirmar al cliente y al asesor la fecha y hora de la visita[cite: 10].",
+                    "Actualizar la agenda electrónica y eliminar el número de serie del listado de productos no atendidos[cite: 10].",
+                    "Realizar llamada de seguimiento al cliente dentro de las 24 horas posteriores a la visita[cite: 10]."
+                ]
             },
             {
                 id: "G-SERV-ARM-01",
                 titulo: "Proceso de Armado y Entrega de Maquinaria Agrícola",
-                categoria: "Servicio / Armado",
-                resumen: "Preparación, armado, lavado y entrega de tractores e implementos solicitados por ventas.",
-                tiempoEstandar: "3 días (Tractores)",
-                version: "A",
-                pdfUrl: "documentos/manual-de-armado.docx",
+                categoria: "Talleres y Operación",
+                resumen: "Lineamientos estándar para la recepción, armado, pruebas de funcionamiento y entrega al cliente de maquinaria agrícola[cite: 1].",
+                tiempoEstandar: "3 a 5 días hábiles",
+                version: "02",
+                fileUrl: "https://raw.githubusercontent.com/OctavioPinoRosas/SistemaDeGestionDelServicio/main/documentos/manual-de-armado.docx",
                 pasos: [
-                    "Ventas envía listado de equipos a preparar los lunes antes de las 10:00 AM junto con los formatos de preparación.",
-                    "Servicio entrega el formato de preparación al técnico/armador especificando modelo, serie, aditamentos, trocha y lastrado.",
-                    "El técnico arma y prepara el tractor/implemento conforme al manual del fabricante.",
-                    "Solicitud de combustible (tanque a 1/4) y niveles de aceite enviando evidencia fotográfica obligatoria.",
-                    "Lavado del tractor e implemento, aplicando almorol a las llantas de los tractores.",
-                    "Llenado del formato de control de calidad / checklist y prueba en dinamómetro según las instalaciones del taller.",
-                    "Carga en transporte, aseguramiento de carga y toma de evidencia fotográfica previa a salir de la sucursal.",
-                    "Entrega en el domicilio del cliente en presencia del vendedor y firma de la lista de verificación sin daños mecánicos ni estéticos."
-                ],
-                keywords: ["armado", "entrega", "preparacion", "tractor", "implemento", "combustible", "aceite", "checklist", "dinamometro", "transporte", "almorol"]
+                    "Ventas envía listado de equipos a preparar los lunes de cada semana con formatos de especificaciones[cite: 1].",
+                    "Servicio entrega formato de preparación al técnico (modelo, serie, fecha promesa, aditamentos, trocha)[cite: 1].",
+                    "Jefe de taller y técnico colocan la fecha promesa de entrega en el listado[cite: 1].",
+                    "Asignación de técnico por el jefe de taller para la preparación conforme al manual del fabricante[cite: 1].",
+                    "Técnico solicita combustible (nivel a 1/4) y aceites (niveles máximos) adjuntando evidencia fotográfica y autorización[cite: 1].",
+                    "Lavado del equipo y aplicación de almorol en llantas de tractores[cite: 1].",
+                    "Llenado del formato de control de calidad con evidencia fotográfica y prueba de dinamómetro[cite: 1].",
+                    "Subir el equipo al transporte asegurando la carga y tomando registro fotográfico/video de accesorios, luces y niveles[cite: 1].",
+                    "Entrega en domicilio del cliente con presencia del vendedor; firma de lista de verificación y entrega de formatos[cite: 1]."
+                ]
             },
             {
                 id: "G-SERV-OM-01",
                 titulo: "Gestión, Seguimiento y Escalamiento de Órdenes de Mantenimiento",
-                categoria: "Mantenimiento / Taller",
-                resumen: "Proceso para la atención oportuna y escalamiento de reparaciones hasta su resolución.",
-                tiempoEstandar: "30 días naturales",
-                version: "A",
-                pdfUrl: "documentos/proceso-gestion-ordenes-mantenimiento.pdf",
+                categoria: "Gestión y Administración",
+                resumen: "Control de órdenes de trabajo, seguimiento de refacciones y escalamiento técnico (DTAC) ante incidencias complejas[cite: 14].",
+                tiempoEstandar: "Plazo objetivo de 30 días",
+                version: "04",
+                fileUrl: "https://raw.githubusercontent.com/OctavioPinoRosas/SistemaDeGestionDelServicio/main/documentos/proceso-gestion-ordenes-mantenimiento.pdf",
                 pasos: [
-                    "Recepción del cliente y reporte de falla por parte del Jefe de Taller (JT).",
-                    "Apertura de la Orden de Mantenimiento (OM) por el Controlista en sistema (plazo objetivo de 30 días para solución).",
-                    "Registro continuo de actividades, diagnósticos y refacciones en la Bitácora de Mantenimiento.",
-                    "Escalamiento a Gerencia de Servicio y Soporte Técnico vía correo si la OM no se soluciona dentro de los primeros 30 días.",
-                    "Monitoreo semanal del caso en conjunto con Soporte Técnico para OM mayores a 31 días.",
-                    "Cierre formal de la OM previa verificación de operación adecuada y conformidad del cliente."
-                ],
-                keywords: ["orden de mantenimiento", "om", "bitacora", "escalamiento", "soporte tecnico", "taller", "reparacion", "diagnostico", "30 dias"]
+                    "Recepción de la solicitud de servicio y atención al cliente por el Jefe de Taller[cite: 14].",
+                    "Generación de la Orden de Mantenimiento (OM) por el Controlista como documento oficial (plazo objetivo de 30 días naturales)[cite: 14].",
+                    "Seguimiento de la reparación mediante bitácora de mantenimiento (registro continuo de actividades, diagnósticos y refacciones)[cite: 14].",
+                    "Escalamiento por falta de solución dentro de los primeros 30 días al Gerente de Servicio solicitando soporte técnico especializado[cite: 16].",
+                    "Gestión de OMs mayores a 31 días con acompañamiento técnico especializado (plazo máximo de 30 días adicionales)[cite: 16].",
+                    "Monitoreo semanal conjunto entre Jefe de Taller y Soporte Técnico hasta el cierre definitivo[cite: 16].",
+                    "Cierre de la Orden de Mantenimiento tras corregir la falla, validar la operación adecuada y confirmar la conformidad del cliente[cite: 16]."
+                ]
             },
             {
-                id: "G-SERV-DAN-01",
-                titulo: "Recepción de Tractores o Implementos con Daños o Faltantes entre Sucursales",
-                categoria: "Logística / Recepción",
-                resumen: "Inspección, documentación fotográfica y deslinde de responsabilidades por daños durante el traslado.",
+                id: "G-SERV-REC-01",
+                titulo: "Proceso para Recepción de Tractores o implementos con Daños o Faltantes entre Sucursales",
+                categoria: "Logística y Sucursales",
+                resumen: "Recepción, inspección, documentación y seguimiento de anomalías en equipos transferidos entre sucursales[cite: 18].",
                 tiempoEstandar: "Notificación < 24 hrs",
                 version: "A",
-                pdfUrl: "documentos/recepcion-danos-faltantes-sucursales.pdf",
+                fileUrl: "https://raw.githubusercontent.com/OctavioPinoRosas/SistemaDeGestionDelServicio/main/documentos/recepcion-danos-faltantes-sucursales.pdf",
                 pasos: [
-                    "Verificación documental de modelo y serie al recibir el tractor o implemento.",
-                    "Inspección visual inicial completa (carrocería, llantas, cabina, luces, accesorios y manuales) antes de descargar o mover la unidad.",
-                    "Captura de evidencia fotográfica completa (mínimo 8 ángulos: frontal, trasera, laterales, horómetro, serie, daños y faltantes).",
-                    "Elaboración del Reporte de Recepción con Daños o Faltantes si se detecta cualquier anomalía.",
-                    "Notificación dentro de las primeras 24 horas por correo electrónico a Gerencias (Servicio, Maquinaria, Ventas, Logística y Origen).",
-                    "Validación de responsabilidades con la sucursal de origen (evaluando si el daño ocurrió antes del embarque, en traslado o en descarga).",
-                    "Elaboración de cotización de reparación y gestión de pago/factura a través del área correspondiente o transporte."
-                ],
-                keywords: ["daños", "faltantes", "sucursales", "traslado", "inspeccion", "evidencia fotografica", "reporte de recepcion", "logistica", "fletera", "fotos"]
+                    "Verificación documental de serie, modelo y accesorios recibidos contra la documentación de traslado por el Jefe de Taller[cite: 18].",
+                    "Inspección visual inicial del equipo antes de descargar (carrocería, pintura, llantas, cabina, luces, accesorios y manuales)[cite: 19].",
+                    "Obtención y resguardo de evidencia fotográfica completa organizada por número de serie del tractor[cite: 19, 20].",
+                    "Elaboración del Reporte de Recepción con Daños o Faltantes en caso de detectar anomalías[cite: 20].",
+                    "Notificación inmediata dentro de las primeras 24 horas a Gerencia de Servicio, Maquinaria, taller de origen y logística[cite: 20].",
+                    "Validación de responsabilidades con la sucursal de origen revisando evidencias de embarque, checklist y origen del daño[cite: 21].",
+                    "Elaboración de cotización de reparación o reposición por el área responsable y búsqueda de proveedores externos si aplica[cite: 21, 22].",
+                    "Seguimiento, verificación de la corrección del daño y archivo de la evidencia de cierre por el Gerente de Servicio y Jefe de Taller[cite: 22, 23]."
+                ]
             }
         ];
 
-        // CONFIGURACIÓN DE ENLACES
-        const LINK_MEJORA_CONTINUA = "https://octaviopinorosas.github.io/Mejora_Continua/";
-        let currentUserName = "Carlos Mendoza";
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const links = document.querySelectorAll('.btnMejoraLink');
-            links.forEach(l => l.href = LINK_MEJORA_CONTINUA);
-
-            initSearchEngine();
-        });
-
-        // =========================================================================
-        // NAVEGACIÓN Y CONTROL DE PANTALLAS
-        // =========================================================================
+        // Función de Navegación entre Pantallas
         function navigateTo(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             const targetScreen = document.getElementById(screenId);
             if (targetScreen) targetScreen.classList.add('active');
 
             const bottomNav = document.getElementById('bottomNav');
+            const btnHeaderLogout = document.getElementById('btnHeaderLogout');
+
             if (screenId === 'screen-login') {
                 bottomNav.classList.add('hidden');
+                btnHeaderLogout.style.display = 'none';
             } else {
                 bottomNav.classList.remove('hidden');
+                btnHeaderLogout.style.display = 'inline-flex';
             }
-
-            window.scrollTo(0, 0);
         }
 
         function executeLogin() {
@@ -828,239 +925,146 @@
             navigateTo('screen-login');
         }
 
-        // =========================================================================
-        // REPRODUCTOR DE VIDEO
-        // =========================================================================
-        function loadVideo(videoId, title) {
-            const iframe = document.getElementById('youtubeIframe');
-            const titleEl = document.getElementById('videoPlayerTitle');
-            if (iframe) iframe.src = `https://www.youtube.com/embed/${videoId}`;
-            if (titleEl) titleEl.textContent = title;
+        function loadVideo(id, title) {
+            document.getElementById('youtubeIframe').src = 'https://www.youtube.com/embed/' + id;
+            document.getElementById('videoPlayerTitle').innerText = title;
         }
 
-        // =========================================================================
-        // LÓGICA DE LAS 4 MODALIDADES DE BÚSQUEDA
-        // =========================================================================
-        function initSearchEngine() {
-            const textInput = document.getElementById('searchInputText');
-            if (textInput) {
-                textInput.addEventListener('input', function(e) {
-                    runTextSearch(e.target.value);
-                });
-                runTextSearch('');
-            }
-            renderIndexCategories();
+        function saveProfileChanges(e) {
+            e.preventDefault();
+            const toast = document.getElementById('toastNotification');
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
         }
 
-        // --- MODALIDAD 1: TEXTO LIBRE ---
-        function runTextSearch(query) {
-            const container = document.getElementById('searchResultsContainer');
-            const countLabel = document.getElementById('searchCountLabel');
-            if (!container) return;
+        function openProcedure(id) {
+            const proc = MANUALES_DB.find(p => p.id === id);
+            if (!proc) return;
 
-            const cleanQuery = query.toLowerCase().trim();
-            const matches = MANUALES_DB.filter(doc => {
-                return doc.titulo.toLowerCase().includes(cleanQuery) ||
-                       doc.resumen.toLowerCase().includes(cleanQuery) ||
-                       doc.keywords.some(k => k.includes(cleanQuery));
-            });
-
-            if (countLabel) countLabel.textContent = `Resultados encontrados (${matches.length}):`;
-            container.innerHTML = '';
-
-            if (matches.length === 0) {
-                container.innerHTML = `<p style="font-size:13px; color:var(--text-muted); text-align:center; padding:15px;">No se encontraron procesos para "${query}".</p>`;
-                return;
-            }
-
-            matches.forEach(doc => {
-                const card = document.createElement('div');
-                card.className = 'menu-card';
-                card.style.textAlign = 'left';
-                card.onclick = () => openProcedure(doc.id);
-                card.innerHTML = `
-                    <strong>${doc.titulo}</strong>
-                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${doc.categoria} | Código: ${doc.id}</p>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        // --- MODALIDAD 2: ÍNDICE POR CATEGORÍAS ---
-        function renderIndexCategories() {
-            const categoriesContainer = document.querySelector('#indexCategories div');
-            if (!categoriesContainer) return;
-
-            const categories = [...new Set(MANUALES_DB.map(m => m.categoria))];
-            categoriesContainer.innerHTML = '';
-
-            categories.forEach((cat, index) => {
-                const btn = document.createElement('button');
-                btn.className = index === 0 ? 'btn' : 'btn btn-outline';
-                btn.style.textAlign = 'left';
-                btn.style.fontSize = '13px';
-                btn.style.justifyContent = 'flex-start';
-                btn.textContent = cat;
-                btn.onclick = () => {
-                    categoriesContainer.querySelectorAll('button').forEach(b => b.className = 'btn btn-outline');
-                    btn.className = 'btn';
-                    filterIndexByCategory(cat);
-                };
-                categoriesContainer.appendChild(btn);
-            });
-
-            if (categories.length > 0) filterIndexByCategory(categories[0]);
-        }
-
-        function filterIndexByCategory(category) {
-            const listContainer = document.querySelector('#indexProcedures div');
-            const titleLabel = document.getElementById('indexCategoryTitle');
-            if (!listContainer) return;
-
-            if (titleLabel) titleLabel.textContent = `Procesos de ${category}`;
-            listContainer.innerHTML = '';
-
-            const filtered = MANUALES_DB.filter(m => m.categoria === category);
-            filtered.forEach(doc => {
-                const card = document.createElement('div');
-                card.className = 'menu-card';
-                card.style.textAlign = 'left';
-                card.style.padding = '12px 16px';
-                card.onclick = () => openProcedure(doc.id);
-                card.textContent = `${doc.titulo} ›`;
-                listContainer.appendChild(card);
-            });
-        }
-
-        // --- MODALIDAD 3: BÚSQUEDA POR VOZ ---
-        function startVoiceRecognition() {
-            const statusEl = document.getElementById('voiceStatus');
-            const subEl = document.getElementById('voiceSub');
-
-            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                const recognition = new SpeechRecognition();
-                recognition.lang = 'es-MX';
-
-                if (statusEl) statusEl.textContent = "Escuchando...";
-                recognition.start();
-
-                recognition.onresult = function(event) {
-                    const transcript = event.results[0][0].transcript.toLowerCase();
-                    if (subEl) subEl.textContent = `Escuchado: "${transcript}"`;
-
-                    const match = MANUALES_DB.find(m => 
-                        m.titulo.toLowerCase().includes(transcript) ||
-                        m.keywords.some(k => transcript.includes(k))
-                    );
-
-                    if (match) {
-                        if (statusEl) statusEl.textContent = "¡Proceso encontrado!";
-                        setTimeout(() => openProcedure(match.id), 1200);
-                    } else {
-                        if (statusEl) statusEl.textContent = "No se halló coincidencia exacta";
-                    }
-                };
-
-                recognition.onerror = function() {
-                    if (statusEl) statusEl.textContent = "Error al escuchar. Intenta nuevamente.";
-                };
-            } else {
-                if (subEl) subEl.textContent = "Simulando voz: 'Mantenimiento'";
-                setTimeout(() => openProcedure("G-SERV-OM-01"), 1000);
-            }
-        }
-
-        // --- MODALIDAD 4: ASISTENTE IA SIMULADO (SIN API KEY Y SIN ERRORES EN GITHUB) ---
-        async function executeAIQuery() {
-            const input = document.getElementById('aiQueryInput');
-            const card = document.getElementById('aiResultCard');
-            const title = document.getElementById('aiResultTitle');
-            const desc = document.getElementById('aiResultDesc');
-
-            if (!input || !input.value.trim()) return;
-
-            const query = input.value.trim().toLowerCase();
-
-            // 1. Mostrar estado de carga animado
-            card.style.display = 'block';
-            card.onclick = null;
-            title.textContent = "🤖 Agente IA Analizando...";
-            desc.textContent = "Consultando en la base de datos de manuales de procesos SGS...";
-
-            // 2. Simular retardo de red de 1.2 segundos para dar dinamismo a la IA
-            await new Promise(resolve => setTimeout(resolve, 1200));
-
-            // 3. Evaluar coincidencia inteligente
-            const matchedDoc = MANUALES_DB.find(m => 
-                m.keywords.some(k => query.includes(k)) ||
-                query.includes(m.categoria.toLowerCase()) ||
-                m.titulo.toLowerCase().split(" ").some(word => word.length > 4 && query.includes(word))
-            );
-
-            title.textContent = "Respuesta del Agente IA:";
-
-            if (matchedDoc) {
-                let responseHTML = `Basado en el manual oficial <strong>${matchedDoc.id}: ${matchedDoc.titulo}</strong> (${matchedDoc.categoria}):<br><br>`;
-                responseHTML += `<strong>Procedimiento paso a paso:</strong><br>`;
-                
-                matchedDoc.pasos.forEach((paso, index) => {
-                    responseHTML += `• ${paso}<br>`;
-                });
-
-                responseHTML += `<br><strong>Tiempo estándar configurado:</strong> ${matchedDoc.tiempoEstandar}.`;
-                
-                desc.innerHTML = responseHTML;
-                card.onclick = () => openProcedure(matchedDoc.id);
-            } else {
-                desc.innerHTML = `No se halló un procedimiento exacto registrado para la consulta "<em>${input.value}</em>".<br><br>` +
-                    `Sugerencia: Prueba consultando sobre <strong>recepción con daños o faltantes, proceso de armado de tractores, órdenes de mantenimiento</strong> o <strong>contact center</strong>.`;
-            }
-        }
-
-        // =========================================================================
-        // VISUALIZACIÓN DINÁMICA DE UN PROCEDIMIENTO
-        // =========================================================================
-        function openProcedure(docId) {
-            const doc = MANUALES_DB.find(m => m.id === docId);
-            if (!doc) return;
-
-            document.getElementById('procTitle').textContent = doc.titulo;
-            document.getElementById('procMeta').textContent = `Tiempo estándar: ${doc.tiempoEstandar} | Versión: ${doc.version} | Código: ${doc.id}`;
-
-            const ol = document.getElementById('procSteps');
-            ol.innerHTML = '';
-            doc.pasos.forEach(paso => {
+            document.getElementById('procTitle').innerText = proc.titulo;
+            document.getElementById('procMeta').innerText = `Código: ${proc.id} | Tiempo estándar: ${proc.tiempoEstandar} | Versión: ${proc.version}`;
+            
+            const stepsContainer = document.getElementById('procSteps');
+            stepsContainer.innerHTML = '';
+            proc.pasos.forEach(paso => {
                 const li = document.createElement('li');
-                li.textContent = paso;
-                ol.appendChild(li);
+                li.innerText = paso;
+                stepsContainer.appendChild(li);
             });
 
-            const btnOpen = document.getElementById('btnOpenDocument');
-            if (btnOpen) {
-                if (doc.pdfUrl) {
-                    btnOpen.style.display = 'inline-flex';
-                    btnOpen.onclick = () => window.open(doc.pdfUrl, '_blank');
-                } else {
-                    btnOpen.style.display = 'none';
-                }
-            }
+            // Asigna la visualización embebida remota sin descargar
+            document.getElementById('btnOpenDocument').onclick = () => {
+                openDocModal(proc);
+            };
 
             navigateTo('screen-procedure');
         }
 
-        // PERFIL
-        function saveProfileChanges(e) {
-            e.preventDefault();
-            const newName = document.getElementById('editUsername').value;
-            if (newName) {
-                currentUserName = newName;
-                document.getElementById('welcomeHeading').textContent = `¡Hola, ${newName}!`;
-
-                const toast = document.getElementById('toastNotification');
-                toast.style.display = 'block';
-                setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        function openDocModal(proc) {
+            document.getElementById('modalDocTitle').innerText = `${proc.id} - ${proc.titulo}`;
+            
+            let viewerUrl = "";
+            if (proc.fileUrl.endsWith('.pdf')) {
+                viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(proc.fileUrl)}&embedded=true`;
+            } else {
+                viewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(proc.fileUrl)}`;
             }
+
+            document.getElementById('docIframe').src = viewerUrl;
+            document.getElementById('docModal').style.display = 'flex';
+        }
+
+        function closeDocModal() {
+            document.getElementById('docModal').style.display = 'none';
+            document.getElementById('docIframe').src = "";
+        }
+
+        // Búsqueda por palabras clave
+        function handleTextSearch(query) {
+            const container = document.getElementById('searchResultsContainer');
+            const countLabel = document.getElementById('searchCountLabel');
+            container.innerHTML = '';
+
+            const q = query.toLowerCase().trim();
+            if (!q) {
+                countLabel.innerText = "Resultados encontrados: 0";
+                return;
+            }
+
+            const results = MANUALES_DB.filter(p => 
+                p.titulo.toLowerCase().includes(q) || 
+                p.resumen.toLowerCase().includes(q) ||
+                p.categoria.toLowerCase().includes(q)
+            );
+
+            countLabel.innerText = `Resultados encontrados: ${results.length}`;
+
+            results.forEach(proc => {
+                const card = document.createElement('div');
+                card.className = 'menu-card';
+                card.style.textAlign = 'left';
+                card.innerHTML = `<strong>${proc.titulo}</strong><p style="font-size:12px; color:var(--text-muted); margin-top:4px;">${proc.resumen}</p>`;
+                card.onclick = () => openProcedure(proc.id);
+                container.appendChild(card);
+            });
+        }
+
+        // Búsqueda por índice
+        function initIndex() {
+            const categoriesContainer = document.getElementById('categoriesList');
+            categoriesContainer.innerHTML = '';
+
+            const categories = [...new Set(MANUALES_DB.map(p => p.categoria))];
+
+            categories.forEach((cat, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-outline';
+                btn.style.fontSize = '13px';
+                btn.style.justifyContent = 'flex-start';
+                btn.innerText = cat;
+                btn.onclick = () => loadProceduresByCategory(cat);
+                categoriesContainer.appendChild(btn);
+
+                if (index === 0) loadProceduresByCategory(cat);
+            });
+        }
+
+        function loadProceduresByCategory(category) {
+            document.getElementById('indexCategoryTitle').innerText = `Procesos: ${category}`;
+            const proceduresContainer = document.getElementById('proceduresList');
+            proceduresContainer.innerHTML = '';
+
+            const procs = MANUALES_DB.filter(p => p.categoria === category);
+            procs.forEach(proc => {
+                const card = document.createElement('div');
+                card.className = 'menu-card';
+                card.style.textAlign = 'left';
+                card.style.padding = '14px';
+                card.innerHTML = `<strong>${proc.titulo}</strong><p style="font-size:11px; color:var(--text-muted); margin-top:3px;">${proc.resumen}</p>`;
+                card.onclick = () => openProcedure(proc.id);
+                proceduresContainer.appendChild(card);
+            });
+        }
+
+        function startVoiceRecognition() {
+            document.getElementById('voiceStatus').innerText = "Escuchando...";
+            setTimeout(() => {
+                document.getElementById('voiceStatus').innerText = "Búsqueda por voz completada";
+                openProcedure('G-SERV-ARM-01');
+            }, 2000);
+        }
+
+        function executeAIQuery() {
+            const input = document.getElementById('aiQueryInput').value;
+            const card = document.getElementById('aiResultCard');
+            const desc = document.getElementById('aiResultDesc');
+            
+            card.style.display = 'block';
+            desc.innerText = "Analizando manuales y bases de conocimiento...";
+
+            setTimeout(() => {
+                desc.innerHTML = `Basado en los manuales de servicio y procedimientos de GIMTRAC, para la consulta <em>"${input || 'general'}"</em> se recomienda seguir los estándares de operación, control y validación estipulados en la base de datos oficial.`;
+            }, 1000);
         }
     </script>
 </body>
