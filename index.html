@@ -7,7 +7,6 @@
     
     <style>
         :root {
-            /* Paleta unificada con tonos verdes corporativos (Estilo John Deere / Mejora Continua) */
             --primary: #14532d;      /* Verde bosque profundo / industrial */
             --secondary: #16a34a;    /* Verde vivo de acento */
             --accent: #22c55e;       /* Verde claro para éxito */
@@ -451,6 +450,16 @@
             height: 100%;
             border: none;
         }
+
+        @keyframes pulseMic {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(22, 163, 74, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+        }
+
+        .mic-active-icon {
+            animation: pulseMic 1.5s infinite;
+        }
     </style>
 </head>
 <body>
@@ -537,7 +546,8 @@
                     <div class="menu-card-icon">📋</div>
                     <strong>Índice de procesos</strong>
                 </div>
-                <div class="menu-card" onclick="navigateTo('screen-voice')">
+                <!-- Al dar clic aquí, se cambia a la pantalla de voz y se inicia de inmediato -->
+                <div class="menu-card" onclick="navigateTo('screen-voice'); startVoiceRecognition();">
                     <div class="menu-card-icon">🎙</div>
                     <strong>Buscar por voz</strong>
                 </div>
@@ -583,15 +593,20 @@
         <section id="screen-voice" class="screen">
             <div class="screen-header">
                 <span class="screen-title">Búsqueda por voz</span>
-                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="navigateTo('screen-main')">Volver</button>
+                <button class="btn-outline" style="width: auto; padding: 6px 14px;" onclick="cancelVoiceRecognition(); navigateTo('screen-main');">Volver</button>
             </div>
-            <div style="text-align: center; padding: 25px 0;">
-                <div style="width: 84px; height: 84px; background: #e8f4fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 42px; color: var(--secondary); margin: 0 auto 16px auto;">
+            <div style="text-align: center; padding: 20px 0;">
+                <div id="micIconBox" class="mic-active-icon" style="width: 84px; height: 84px; background: #e8f4fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 42px; color: var(--secondary); margin: 0 auto 16px auto;">
                     🎙
                 </div>
-                <h3 id="voiceStatus">Habla ahora</h3>
-                <p id="voiceSub" style="color: var(--text-muted); margin-bottom: 22px;">Presiona el botón y di qué procedimiento deseas consultar.</p>
-                <button class="btn btn-outline" style="width: 240px; margin: 0 auto;" onclick="startVoiceRecognition()">🎙 Iniciar Reconocimiento</button>
+                <h3 id="voiceStatus">Escuchando... Habla ahora</h3>
+                <p id="voiceSub" style="color: var(--text-muted); margin-bottom: 20px;">Di qué procedimiento deseas consultar (ej. "Armado", "Contact Center").</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 10px; max-width: 280px; margin: 0 auto;">
+                    <button class="btn" onclick="stopAndProcessVoice()">✅ Terminar detección de voz</button>
+                    <button class="btn btn-outline" onclick="startVoiceRecognition()">🔄 Reintentar escucha</button>
+                    <button class="btn btn-danger" onclick="cancelVoiceRecognition(); navigateTo('screen-main');">❌ Cancelar</button>
+                </div>
             </div>
         </section>
 
@@ -820,84 +835,87 @@
                 id: "G-SERV-025-A",
                 titulo: "Proceso de Contact Center",
                 categoria: "Atención a Clientes",
-                resumen: "Llamadas proactivas a clientes con más de 12 meses sin atención o de la lista Warranty[cite: 2].",
+                resumen: "Llamadas proactivas a clientes con más de 12 meses sin atención o de la lista Warranty.",
                 tiempoEstandar: "Respuesta < 24 hrs",
                 version: "A",
                 fileUrl: "https://raw.githubusercontent.com/OctavioPinoRosas/SistemaDeGestionDelServicio/main/documentos/proceso-de-venta.pdf",
                 pasos: [
-                    "Inicia con la necesidad del cliente o llamada proactiva del Contact Center (vía telefónica, WhatsApp o Expert Connect)[cite: 9].",
-                    "Recibir en los primeros 5 días hábiles de cada mes el listado de clientes y series de equipos sin atención de servicio (Warranty con antigüedad de hasta 10 años)[cite: 9].",
-                    "Realizar segundo filtro en el sistema CALIPSO por dirección de facturación y cercanía del taller GIMTRAC[cite: 9].",
-                    "Identificar el último servicio preventivo, correctivo o de garantía en clientes con más de 10 meses sin atención[cite: 9].",
-                    "Realizar llamada telefónica aplicando el speech oficial de contacto[cite: 9].",
-                    "Proporcionar cotizaciones de servicios preventivos, diagnósticos o levantamientos requeridos[cite: 9].",
-                    "Promocionar ofertas vigentes de fábrica (reparación de embrague, paquetes de 1000/2000 hrs, financiamiento)[cite: 9, 10].",
-                    "Derivar la atención y seguimiento al jefe de taller más cercano si el cliente acepta la cotización[cite: 10].",
-                    "Enviar información del cliente al jefe de taller (ubicación, teléfono, referencias físicas y forma de pago)[cite: 10].",
-                    "El jefe de taller avisa al cliente, gestiona la OM, solicitud de combustible, TAG, viáticos y aplicación del pago[cite: 10].",
-                    "Confirmar al cliente y al asesor la fecha y hora de la visita[cite: 10].",
-                    "Actualizar la agenda electrónica y eliminar el número de serie del listado de productos no atendidos[cite: 10].",
-                    "Realizar llamada de seguimiento al cliente dentro de las 24 horas posteriores a la visita[cite: 10]."
+                    "Inicia con la necesidad del cliente o llamada proactiva del Contact Center (vía telefónica, WhatsApp o Expert Connect).",
+                    "Recibir en los primeros 5 días hábiles de cada mes el listado de clientes y series de equipos sin atención de servicio (Warranty con antigüedad de hasta 10 años).",
+                    "Realizar segundo filtro en el sistema CALIPSO por dirección de facturación y cercanía del taller GIMTRAC.",
+                    "Identificar el último servicio preventivo, correctivo o de garantía en clientes con más de 10 meses sin atención.",
+                    "Realizar llamada telefónica aplicando el speech oficial de contacto.",
+                    "Proporcionar cotizaciones de servicios preventivos, diagnósticos o levantamientos requeridos.",
+                    "Promocionar ofertas vigentes de fábrica (reparación de embrague, paquetes de 1000/2000 hrs, financiamiento).",
+                    "Derivar la atención y seguimiento al jefe de taller más cercano si el cliente acepta la cotización.",
+                    "Enviar información del cliente al jefe de taller (ubicación, teléfono, referencias físicas y forma de pago).",
+                    "El jefe de taller avisa al cliente, gestiona la OM, solicitud de combustible, TAG, viáticos y aplicación del pago.",
+                    "Confirmar al cliente y al asesor la fecha y hora de la visita.",
+                    "Actualizar la agenda electrónica y eliminar el número de serie del listado de productos no atendidos.",
+                    "Realizar llamada de seguimiento al cliente dentro de las 24 horas posteriores a la visita."
                 ]
             },
             {
                 id: "G-SERV-ARM-01",
                 titulo: "Proceso de Armado y Entrega de Maquinaria Agrícola",
                 categoria: "Talleres y Operación",
-                resumen: "Lineamientos estándar para la recepción, armado, pruebas de funcionamiento y entrega al cliente de maquinaria agrícola[cite: 1].",
+                resumen: "Lineamientos estándar para la recepción, armado, pruebas de funcionamiento y entrega al cliente de maquinaria agrícola.",
                 tiempoEstandar: "3 a 5 días hábiles",
                 version: "02",
                 fileUrl: "https://raw.githubusercontent.com/OctavioPinoRosas/SistemaDeGestionDelServicio/main/documentos/manual-de-armado.docx",
                 pasos: [
-                    "Ventas envía listado de equipos a preparar los lunes de cada semana con formatos de especificaciones[cite: 1].",
-                    "Servicio entrega formato de preparación al técnico (modelo, serie, fecha promesa, aditamentos, trocha)[cite: 1].",
-                    "Jefe de taller y técnico colocan la fecha promesa de entrega en el listado[cite: 1].",
-                    "Asignación de técnico por el jefe de taller para la preparación conforme al manual del fabricante[cite: 1].",
-                    "Técnico solicita combustible (nivel a 1/4) y aceites (niveles máximos) adjuntando evidencia fotográfica y autorización[cite: 1].",
-                    "Lavado del equipo y aplicación de almorol en llantas de tractores[cite: 1].",
-                    "Llenado del formato de control de calidad con evidencia fotográfica y prueba de dinamómetro[cite: 1].",
-                    "Subir el equipo al transporte asegurando la carga y tomando registro fotográfico/video de accesorios, luces y niveles[cite: 1].",
-                    "Entrega en domicilio del cliente con presencia del vendedor; firma de lista de verificación y entrega de formatos[cite: 1]."
+                    "Ventas envía listado de equipos a preparar los lunes de cada semana con formatos de especificaciones.",
+                    "Servicio entrega formato de preparación al técnico (modelo, serie, fecha promesa, aditamentos, trocha).",
+                    "Jefe de taller y técnico colocan la fecha promesa de entrega en el listado.",
+                    "Asignación de técnico por el jefe de taller para la preparación conforme al manual del fabricante.",
+                    "Técnico solicita combustible (nivel a 1/4) y aceites (niveles máximos) adjuntando evidencia fotográfica y autorización.",
+                    "Lavado del equipo y aplicación de almorol en llantas de tractores.",
+                    "Llenado del formato de control de calidad con evidencia fotográfica y prueba de dinamómetro.",
+                    "Subir el equipo al transporte asegurando la carga y tomando registro fotográfico/video de accesorios, luces y niveles.",
+                    "Entrega en domicilio del cliente con presencia del vendedor; firma de lista de verificación y entrega de formatos."
                 ]
             },
             {
                 id: "G-SERV-OM-01",
                 titulo: "Gestión, Seguimiento y Escalamiento de Órdenes de Mantenimiento",
                 categoria: "Gestión y Administración",
-                resumen: "Control de órdenes de trabajo, seguimiento de refacciones y escalamiento técnico (DTAC) ante incidencias complejas[cite: 14].",
+                resumen: "Control de órdenes de trabajo, seguimiento de refacciones y escalamiento técnico (DTAC) ante incidencias complejas.",
                 tiempoEstandar: "Plazo objetivo de 30 días",
                 version: "04",
                 fileUrl: "https://raw.githubusercontent.com/OctavioPinoRosas/SistemaDeGestionDelServicio/main/documentos/proceso-gestion-ordenes-mantenimiento.pdf",
                 pasos: [
-                    "Recepción de la solicitud de servicio y atención al cliente por el Jefe de Taller[cite: 14].",
-                    "Generación de la Orden de Mantenimiento (OM) por el Controlista como documento oficial (plazo objetivo de 30 días naturales)[cite: 14].",
-                    "Seguimiento de la reparación mediante bitácora de mantenimiento (registro continuo de actividades, diagnósticos y refacciones)[cite: 14].",
-                    "Escalamiento por falta de solución dentro de los primeros 30 días al Gerente de Servicio solicitando soporte técnico especializado[cite: 16].",
-                    "Gestión de OMs mayores a 31 días con acompañamiento técnico especializado (plazo máximo de 30 días adicionales)[cite: 16].",
-                    "Monitoreo semanal conjunto entre Jefe de Taller y Soporte Técnico hasta el cierre definitivo[cite: 16].",
-                    "Cierre de la Orden de Mantenimiento tras corregir la falla, validar la operación adecuada y confirmar la conformidad del cliente[cite: 16]."
+                    "Recepción de la solicitud de servicio y atención al cliente por el Jefe de Taller.",
+                    "Generación de la Orden de Mantenimiento (OM) por el Controlista como documento oficial (plazo objetivo de 30 días naturales).",
+                    "Seguimiento de la reparación mediante bitácora de mantenimiento (registro continuo de actividades, diagnósticos y refacciones).",
+                    "Escalamiento por falta de solución dentro de los primeros 30 días al Gerente de Servicio solicitando soporte técnico especializado.",
+                    "Gestión de OMs mayores a 31 días con acompañamiento técnico especializado (plazo máximo de 30 días adicionales).",
+                    "Monitoreo semanal conjunto entre Jefe de Taller y Soporte Técnico hasta el cierre definitivo.",
+                    "Cierre de la Orden de Mantenimiento tras corregir la falla, validar la operación adecuada y confirmar la conformidad del cliente."
                 ]
             },
             {
                 id: "G-SERV-REC-01",
                 titulo: "Proceso para Recepción de Tractores o implementos con Daños o Faltantes entre Sucursales",
                 categoria: "Logística y Sucursales",
-                resumen: "Recepción, inspección, documentación y seguimiento de anomalías en equipos transferidos entre sucursales[cite: 18].",
+                resumen: "Recepción, inspección, documentación y seguimiento de anomalías en equipos transferidos entre sucursales.",
                 tiempoEstandar: "Notificación < 24 hrs",
                 version: "A",
                 fileUrl: "https://raw.githubusercontent.com/OctavioPinoRosas/SistemaDeGestionDelServicio/main/documentos/recepcion-danos-faltantes-sucursales.pdf",
                 pasos: [
-                    "Verificación documental de serie, modelo y accesorios recibidos contra la documentación de traslado por el Jefe de Taller[cite: 18].",
-                    "Inspección visual inicial del equipo antes de descargar (carrocería, pintura, llantas, cabina, luces, accesorios y manuales)[cite: 19].",
-                    "Obtención y resguardo de evidencia fotográfica completa organizada por número de serie del tractor[cite: 19, 20].",
-                    "Elaboración del Reporte de Recepción con Daños o Faltantes en caso de detectar anomalías[cite: 20].",
-                    "Notificación inmediata dentro de las primeras 24 horas a Gerencia de Servicio, Maquinaria, taller de origen y logística[cite: 20].",
-                    "Validación de responsabilidades con la sucursal de origen revisando evidencias de embarque, checklist y origen del daño[cite: 21].",
-                    "Elaboración de cotización de reparación o reposición por el área responsable y búsqueda de proveedores externos si aplica[cite: 21, 22].",
-                    "Seguimiento, verificación de la corrección del daño y archivo de la evidencia de cierre por el Gerente de Servicio y Jefe de Taller[cite: 22, 23]."
+                    "Verificación documental de serie, modelo y accesorios recibidos contra la documentación de traslado por el Jefe de Taller.",
+                    "Inspección visual inicial del equipo antes de descargar (carrocería, pintura, llantas, cabina, luces, accesorios y manuales).",
+                    "Obtención y resguardo de evidencia fotográfica completa organizada por número de serie del tractor.",
+                    "Elaboración del Reporte de Recepción con Daños o Faltantes en caso de detectar anomalías.",
+                    "Notificación inmediata dentro de las primeras 24 horas a Gerencia de Servicio, Maquinaria, taller de origen y logística.",
+                    "Validación de responsabilidades con la sucursal de origen revisando evidencias de embarque, checklist y origen del daño.",
+                    "Elaboración de cotización de reparación o reposición por el área responsable y búsqueda de proveedores externos si aplica.",
+                    "Seguimiento, verificación de la corrección del daño y archivo de la evidencia de cierre por el Gerente de Servicio y Jefe de Taller."
                 ]
             }
         ];
+
+        let activeRecognition = null;
+        let lastTranscript = "";
 
         // Función de Navegación entre Pantallas
         function navigateTo(screenId) {
@@ -938,6 +956,7 @@
         }
 
         function openProcedure(id) {
+            cancelVoiceRecognition();
             const proc = MANUALES_DB.find(p => p.id === id);
             if (!proc) return;
 
@@ -952,7 +971,6 @@
                 stepsContainer.appendChild(li);
             });
 
-            // Asigna la visualización embebida remota sin descargar
             document.getElementById('btnOpenDocument').onclick = () => {
                 openDocModal(proc);
             };
@@ -1046,12 +1064,106 @@
             });
         }
 
+        // =========================================================================
+        // MÓDULO DE VOZ CON DETECCIÓN, TERMINACIÓN MANUAL Y CANCELACIÓN
+        // =========================================================================
         function startVoiceRecognition() {
-            document.getElementById('voiceStatus').innerText = "Escuchando...";
-            setTimeout(() => {
-                document.getElementById('voiceStatus').innerText = "Búsqueda por voz completada";
-                openProcedure('G-SERV-ARM-01');
-            }, 2000);
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                alert("Tu navegador no soporta búsqueda por voz. Te sugerimos usar Google Chrome.");
+                return;
+            }
+
+            if (activeRecognition) {
+                try { activeRecognition.stop(); } catch(e) {}
+            }
+
+            const recognition = new SpeechRecognition();
+            activeRecognition = recognition;
+            recognition.lang = 'es-MX';
+            recognition.interimResults = true; // Permite capturar texto en tiempo real
+            recognition.maxAlternatives = 1;
+
+            lastTranscript = "";
+            document.getElementById('voiceStatus').innerText = "Escuchando... Habla ahora 🎙️";
+            document.getElementById('voiceSub').innerText = "Di qué procedimiento deseas consultar.";
+
+            recognition.onresult = function(event) {
+                let interim = "";
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        lastTranscript += event.results[i][0].transcript;
+                    } else {
+                        interim += event.results[i][0].transcript;
+                    }
+                }
+                const currentText = lastTranscript || interim;
+                if(currentText) {
+                    document.getElementById('voiceStatus').innerText = `Escuchando: "${currentText}"`;
+                }
+            };
+
+            recognition.onerror = function(event) {
+                if(event.error !== 'aborted') {
+                    document.getElementById('voiceStatus').innerText = "No se pudo reconocer el audio";
+                    document.getElementById('voiceSub').innerText = "Haz clic en 'Reintentar' o 'Cancelar'.";
+                }
+            };
+
+            recognition.onend = function() {
+                // Si finaliza de forma natural y hay texto guardado, procesarlo
+                if (lastTranscript) {
+                    processSpokenText(lastTranscript);
+                }
+            };
+
+            try {
+                recognition.start();
+            } catch(e) {}
+        }
+
+        // Botón "Terminar detección de voz"
+        function stopAndProcessVoice() {
+            if (activeRecognition) {
+                try {
+                    activeRecognition.stop(); // Esto disparará el onend o podemos procesar de inmediato
+                } catch(e) {}
+            }
+            if (lastTranscript) {
+                processSpokenText(lastTranscript);
+            } else {
+                document.getElementById('voiceStatus').innerText = "No se detectó voz. Inténtalo de nuevo.";
+            }
+        }
+
+        function processSpokenText(text) {
+            const spokenText = text.toLowerCase().trim();
+            document.getElementById('voiceStatus').innerText = `Procesando: "${spokenText}"`;
+
+            if (spokenText.includes("armado") || spokenText.includes("tractor") || spokenText.includes("maquinaria")) {
+                setTimeout(() => openProcedure('G-SERV-ARM-01'), 600);
+            } else if (spokenText.includes("contact center") || spokenText.includes("llamadas") || spokenText.includes("cliente")) {
+                setTimeout(() => openProcedure('G-SERV-025-A'), 600);
+            } else if (spokenText.includes("mantenimiento") || spokenText.includes("orden") || spokenText.includes("escalamiento")) {
+                setTimeout(() => openProcedure('G-SERV-OM-01'), 600);
+            } else if (spokenText.includes("daños") || spokenText.includes("sucursales") || spokenText.includes("faltantes")) {
+                setTimeout(() => openProcedure('G-SERV-REC-01'), 600);
+            } else {
+                document.getElementById('aiQueryInput').value = text;
+                navigateTo('screen-ai');
+                executeAIQuery();
+            }
+        }
+
+        function cancelVoiceRecognition() {
+            if (activeRecognition) {
+                try {
+                    activeRecognition.abort();
+                } catch(e) {}
+                activeRecognition = null;
+            }
+            lastTranscript = "";
         }
 
         function executeAIQuery() {
