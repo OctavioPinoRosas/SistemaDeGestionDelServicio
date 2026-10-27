@@ -401,7 +401,6 @@
             margin: 0 auto 16px auto;
         }
 
-        /* Modal visor in-app */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -464,7 +463,6 @@
 </head>
 <body>
 
-    <!-- Toast de Notificación -->
     <div id="toastNotification" class="toast">¡Cambios guardados con éxito!</div>
 
     <!-- MODAL VISOR DE DOCUMENTO IN-APP -->
@@ -546,7 +544,6 @@
                     <div class="menu-card-icon">📋</div>
                     <strong>Índice de procesos</strong>
                 </div>
-                <!-- Al dar clic aquí, se cambia a la pantalla de voz y se inicia de inmediato -->
                 <div class="menu-card" onclick="navigateTo('screen-voice'); startVoiceRecognition();">
                     <div class="menu-card-icon">🎙</div>
                     <strong>Buscar por voz</strong>
@@ -619,7 +616,7 @@
             <div style="background: #f8fafc; padding: 16px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 16px;">
                 <p><strong>Asistente IA SGS:</strong> Realiza cualquier pregunta sobre la operación y el agente responderá usando los manuales.</p>
                 <div class="form-group" style="margin-top: 10px;">
-                    <input type="text" id="aiQueryInput" placeholder="Ej: ¿Cuántos días de margen se contemplan para tener listo el armado de un tractor agrícola?" style="margin-bottom: 8px;">
+                    <input type="text" id="aiQueryInput" placeholder="Ej: ¿Cuántas fotos se deben tomar al recibir un equipo?" style="margin-bottom: 8px;">
                     <button class="btn" onclick="executeAIQuery()">🤖 Consultar al Agente IA</button>
                 </div>
             </div>
@@ -828,8 +825,11 @@
 
     <script>
         // =========================================================================
-        // BASE DE DATOS LOCAL CON LOS ENLACES RAW DE GITHUB
+        // URL DE TU BACKEND PROXY EN RENDER
         // =========================================================================
+        const BACKEND_URL = "https://sgs-backend-proxy.onrender.com/api/ia";
+
+        // BASE DE DATOS LOCAL
         const MANUALES_DB = [
             {
                 id: "G-SERV-025-A",
@@ -904,7 +904,7 @@
                 pasos: [
                     "Verificación documental de serie, modelo y accesorios recibidos contra la documentación de traslado por el Jefe de Taller.",
                     "Inspección visual inicial del equipo antes de descargar (carrocería, pintura, llantas, cabina, luces, accesorios y manuales).",
-                    "Obtención y resguardo de evidencia fotográfica completa organizada por número de serie del tractor.",
+                    "Obtención y resguardo de evidencia fotográfica completa organizada por número de serie del tractor: 1) Vista frontal, 2) Vista trasera, 3) Costado derecho, 4) Costado izquierdo, 5) Horómetro, 6) Número de serie, 7) Daños detectados, 8) Faltantes identificados, 9) Condiciones generales.",
                     "Elaboración del Reporte de Recepción con Daños o Faltantes en caso de detectar anomalías.",
                     "Notificación inmediata dentro de las primeras 24 horas a Gerencia de Servicio, Maquinaria, taller de origen y logística.",
                     "Validación de responsabilidades con la sucursal de origen revisando evidencias de embarque, checklist y origen del daño.",
@@ -917,7 +917,6 @@
         let activeRecognition = null;
         let lastTranscript = "";
 
-        // Función de Navegación entre Pantallas
         function navigateTo(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             const targetScreen = document.getElementById(screenId);
@@ -997,7 +996,6 @@
             document.getElementById('docIframe').src = "";
         }
 
-        // Búsqueda por palabras clave
         function handleTextSearch(query) {
             const container = document.getElementById('searchResultsContainer');
             const countLabel = document.getElementById('searchCountLabel');
@@ -1027,7 +1025,6 @@
             });
         }
 
-        // Búsqueda por índice
         function initIndex() {
             const categoriesContainer = document.getElementById('categoriesList');
             categoriesContainer.innerHTML = '';
@@ -1065,7 +1062,7 @@
         }
 
         // =========================================================================
-        // MÓDULO DE VOZ CON DETECCIÓN, TERMINACIÓN MANUAL Y CANCELACIÓN
+        // MÓDULO DE RECONOCIMIENTO DE VOZ
         // =========================================================================
         function startVoiceRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1082,7 +1079,7 @@
             const recognition = new SpeechRecognition();
             activeRecognition = recognition;
             recognition.lang = 'es-MX';
-            recognition.interimResults = true; // Permite capturar texto en tiempo real
+            recognition.interimResults = true;
             recognition.maxAlternatives = 1;
 
             lastTranscript = "";
@@ -1112,7 +1109,6 @@
             };
 
             recognition.onend = function() {
-                // Si finaliza de forma natural y hay texto guardado, procesarlo
                 if (lastTranscript) {
                     processSpokenText(lastTranscript);
                 }
@@ -1123,11 +1119,10 @@
             } catch(e) {}
         }
 
-        // Botón "Terminar detección de voz"
         function stopAndProcessVoice() {
             if (activeRecognition) {
                 try {
-                    activeRecognition.stop(); // Esto disparará el onend o podemos procesar de inmediato
+                    activeRecognition.stop();
                 } catch(e) {}
             }
             if (lastTranscript) {
@@ -1166,17 +1161,63 @@
             lastTranscript = "";
         }
 
-        function executeAIQuery() {
+        // =========================================================================
+        // LLAMADA AL BACKEND PROXY EN RENDER PARA LA IA CON CONTEXTO Y MANUAL DE REFERENCIA
+        // =========================================================================
+        async function executeAIQuery() {
             const input = document.getElementById('aiQueryInput').value;
             const card = document.getElementById('aiResultCard');
             const desc = document.getElementById('aiResultDesc');
             
-            card.style.display = 'block';
-            desc.innerText = "Analizando manuales y bases de conocimiento...";
+            if (!input.trim()) return;
 
-            setTimeout(() => {
-                desc.innerHTML = `Basado en los manuales de servicio y procedimientos de GIMTRAC, para la consulta <em>"${input || 'general'}"</em> se recomienda seguir los estándares de operación, control y validación estipulados en la base de datos oficial.`;
-            }, 1000);
+            card.style.display = 'block';
+            desc.innerHTML = "<em>Consultando la base de manuales con el Agente IA de GIMTRAC...</em>";
+
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        prompt: input,
+                        contextoManuales: MANUALES_DB // Enviamos los manuales actualizados
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.respuesta) {
+                    let htmlContenido = `<p style="white-space: pre-line;">${data.respuesta}</p>`;
+
+                    // Si el backend identificó qué manual responde a la consulta, generamos la tarjeta y botón de acceso
+                    if (data.manualId) {
+                        const manualAsociado = MANUALES_DB.find(m => m.id === data.manualId);
+                        if (manualAsociado) {
+                            htmlContenido += `
+                                <hr style="margin: 15px 0; border: 0; border-top: 1px solid var(--border-color);">
+                                <div style="background-color: #f0fdf4; border: 1px solid var(--secondary); padding: 12px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                                    <div>
+                                        <div style="font-weight: bold; color: var(--primary);">📖 Documento de Referencia:</div>
+                                        <div style="font-size: 13px; color: var(--text-dark);">${manualAsociado.titulo} (${manualAsociado.id})</div>
+                                    </div>
+                                    <button class="btn btn-outline" style="width: auto; padding: 6px 14px; font-size: 12px; font-weight: bold;" onclick="openDocModal(MANUALES_DB.find(m => m.id === '${manualAsociado.id}'))">
+                                        📖 Ver Manual en Pantalla
+                                    </button>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    desc.innerHTML = htmlContenido;
+                } else {
+                    desc.innerText = "La IA no devolvió una respuesta válida. Verifica los logs en Render.";
+                }
+            } catch (error) {
+                console.error("Error al conectar con el backend proxy:", error);
+                desc.innerText = "No se pudo conectar con el servidor proxy de IA en Render. Asegúrate de que el Web Service esté activo.";
+            }
         }
     </script>
 </body>
