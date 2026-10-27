@@ -1182,16 +1182,29 @@
                     },
                     body: JSON.stringify({ 
                         prompt: input,
-                        contextoManuales: MANUALES_DB // Enviamos los manuales actualizados
+                        contextoManuales: MANUALES_DB 
                     })
                 });
 
                 const data = await response.json();
 
+                if (response.status === 503 || data.error) {
+                    // Mensaje amigable de alta demanda con opción de reintentar
+                    desc.innerHTML = `
+                        <div style="background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 12px; border-radius: 8px;">
+                            <strong>⚠️ Alta demanda en los servidores de IA</strong><br>
+                            Los modelos principales están ocupados temporalmente. Por favor, haz clic en el botón de abajo para intentar de nuevo.
+                            <br><br>
+                            <button class="btn" style="padding: 6px 12px; font-size: 13px;" onclick="executeAIQuery()">🔄 Reintentar consulta</button>
+                        </div>
+                    `;
+                    return;
+                }
+
                 if (data.respuesta) {
                     let htmlContenido = `<p style="white-space: pre-line;">${data.respuesta}</p>`;
 
-                    // Si el backend identificó qué manual responde a la consulta, generamos la tarjeta y botón de acceso
+                    // Si el backend identificó qué manual responde, generamos la tarjeta de referencia
                     if (data.manualId) {
                         const manualAsociado = MANUALES_DB.find(m => m.id === data.manualId);
                         if (manualAsociado) {
@@ -1212,11 +1225,11 @@
 
                     desc.innerHTML = htmlContenido;
                 } else {
-                    desc.innerText = "La IA no devolvió una respuesta válida. Verifica los logs en Render.";
+                    desc.innerText = "La IA no devolvió una respuesta válida.";
                 }
             } catch (error) {
                 console.error("Error al conectar con el backend proxy:", error);
-                desc.innerText = "No se pudo conectar con el servidor proxy de IA en Render. Asegúrate de que el Web Service esté activo.";
+                desc.innerText = "No se pudo conectar con el servidor proxy de IA en Render.";
             }
         }
     </script>
